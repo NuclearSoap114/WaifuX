@@ -117,7 +117,7 @@ struct InteractionPerformanceWindow: Sendable {
 final class InteractionPerformanceLog: @unchecked Sendable {
     private static let shared = InteractionPerformanceLog()
     private let lock = NSLock()
-    private let queue = DispatchQueue(label: "com.waifux.performance-log", qos: .utility)
+    private let queue = DispatchQueue(label: "com.mivori.performance-log", qos: .utility)
     private var window = InteractionPerformanceWindow()
     private var flushScheduled = false
 
@@ -203,17 +203,17 @@ final class AppLogger: @unchecked Sendable {
     /// 文件路径
     private lazy var logFileURL: URL? = {
         guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return nil }
-        let waifuXDir = appSupport.appendingPathComponent("WaifuX", isDirectory: true)
+        let waifuXDir = appSupport.appendingPathComponent("Mivori", isDirectory: true)
         try? FileManager.default.createDirectory(at: waifuXDir, withIntermediateDirectories: true)
         return waifuXDir.appendingPathComponent("waifux.log")
     }()
 
     // os.log subsystem
-    private static let subsystem = "com.waifux.app"
+    private static let subsystem = "com.mivori.app"
     private static let oslog = OSLog(subsystem: subsystem, category: "WaifuX")
 
     // 队列保证线程安全写入文件
-    private let queue = DispatchQueue(label: "com.waifux.logger", qos: .utility)
+    private let queue = DispatchQueue(label: "com.mivori.logger", qos: .utility)
 
     private init() {}
 
@@ -520,10 +520,10 @@ final class AppLogger: @unchecked Sendable {
 
         // 锁屏视频由独立的 Wallpaper Extension 播放。主 App 的日志没有
         // reader 循环、解码失败和 WallpaperAgent update，诊断时需要同一份导出。
-        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app") {
+        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") {
             readableSegments += appendLogSegment(
                 "WALLPAPER EXTENSION LOG",
-                from: container.appendingPathComponent("waifux-extension.log"),
+                from: container.appendingPathComponent("mivori-extension.log"),
                 maxBytes: 1024 * 1024,
                 to: destination
             )
@@ -532,7 +532,7 @@ final class AppLogger: @unchecked Sendable {
         }
         readableSegments += appendLogSegment(
             "WALLPAPER EXTENSION LOG (fallback)",
-            from: URL(fileURLWithPath: "/tmp/waifux-extension.log"),
+            from: URL(fileURLWithPath: "/tmp/mivori-extension.log"),
             maxBytes: 512 * 1024,
             to: destination
         )
@@ -541,7 +541,7 @@ final class AppLogger: @unchecked Sendable {
         let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
         readableSegments += appendLogSegment(
             "EXIT DIAGNOSTICS",
-            from: appSupport?.appendingPathComponent("WaifuX/waifux-exit.log"),
+            from: appSupport?.appendingPathComponent("Mivori/waifux-exit.log"),
             maxBytes: 256 * 1024,
             to: destination
         )
@@ -553,19 +553,19 @@ final class AppLogger: @unchecked Sendable {
         // Web 壁纸 daemon（主 App 未启用沙盒，/tmp 可直接读取）
         readableSegments += appendLogSegment(
             "WEB RENDERER DAEMON",
-            from: URL(fileURLWithPath: "/tmp/wallpaperengine-cli-debug.log"),
+            from: URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli-debug.log"),
             maxBytes: 512 * 1024,
             to: destination
         )
         readableSegments += appendLogSegment(
             "WEB RENDERER DAEMON OUTPUT",
-            from: URL(fileURLWithPath: "/tmp/wallpaperengine-cli-daemon.log"),
+            from: URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli-daemon.log"),
             maxBytes: 256 * 1024,
             to: destination
         )
         readableSegments += appendLogSegment(
             "WALLPAPER EXTENSION KEEPER",
-            from: fm.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/WaifuXKeeper.log"),
+            from: fm.homeDirectoryForCurrentUser.appendingPathComponent("Library/Logs/MivoriKeeper.log"),
             maxBytes: 256 * 1024,
             to: destination
         )
@@ -613,7 +613,7 @@ final class AppLogger: @unchecked Sendable {
             }
         }
 
-        // wgpu 渲染器自身的 stdout/stderr 落在 Caches/com.waifux.wallpaperengine/renderer-logs
+        // wgpu 渲染器自身的 stdout/stderr 落在 Caches/com.mivori.wallpaperengine/renderer-logs
         // （每屏一个文件，GPU init 失败/panic/事件循环异常只在这里）。逐屏并入主文件，
         // 保证「全部日志」一次导出就是单个产物；wgpu 内部问题才能随导出送达。
         // 最多取 6 个文件（常见 1–3 屏，留出历史屏位），避免多屏时把导出文件撑大。
@@ -623,7 +623,7 @@ final class AppLogger: @unchecked Sendable {
             rendererLogs = URL(fileURLWithPath: String(cString: overridePath), isDirectory: true)
         } else if let caches = fm.urls(for: .cachesDirectory, in: .userDomainMask).first {
             rendererLogs = caches.appendingPathComponent(
-                "com.waifux.wallpaperengine/renderer-logs", isDirectory: true)
+                "com.mivori.wallpaperengine/renderer-logs", isDirectory: true)
         } else {
             rendererLogs = nil
         }

@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Workshop 壁纸模型
 ///
 /// 表示 Wallpaper Engine Steam 创意工坊中的一个壁纸项目
-struct WorkshopWallpaper: Identifiable, Codable {
+struct WorkshopWallpaper: Identifiable, Codable, Sendable {
     let id: String              // Steam Workshop ID
     let title: String
     let description: String?
@@ -28,7 +28,7 @@ struct WorkshopWallpaper: Identifiable, Codable {
     let createdAt: Date?
     let updatedAt: Date?
     
-    enum WallpaperType: String, Codable {
+    enum WallpaperType: String, Codable, Sendable {
         case video = "video"
         case scene = "scene"           // Unity WebGL
         case web = "web"               // HTML/JS
@@ -39,7 +39,7 @@ struct WorkshopWallpaper: Identifiable, Codable {
 }
 
 // MARK: - Workshop 作者信息
-struct WorkshopAuthor: Codable {
+struct WorkshopAuthor: Codable, Sendable {
     let steamID: String
     let name: String
     let avatarURL: URL?

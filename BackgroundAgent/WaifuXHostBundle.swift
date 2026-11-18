@@ -12,7 +12,7 @@ enum WaifuXHostBundle {
             .deletingLastPathComponent() // Contents/Helpers
             .deletingLastPathComponent() // Contents
             .deletingLastPathComponent() // WaifuX.app
-        guard Bundle(url: candidate)?.bundleIdentifier == "com.waifux.app" else {
+        guard Bundle(url: candidate)?.bundleIdentifier == "com.mivori.app" else {
             return current.bundleURL
         }
         return candidate

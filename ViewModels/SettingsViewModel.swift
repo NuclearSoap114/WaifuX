@@ -772,7 +772,7 @@ class SettingsViewModel: ObservableObject {
     /// 共享容器缓存占用（不含用户设置与 socket，那些不是可清理对象）。
     private static func appGroupCacheBytes() -> Int64 {
         guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.waifux.app"
+            forSecurityApplicationGroupIdentifier: "group.com.mivori.app"
         ) else { return 0 }
         return AppGroupCacheBudget.usage(ofContainer: container).total
     }
@@ -817,7 +817,7 @@ class SettingsViewModel: ObservableObject {
     private static func clearAppGroupCache() {
         let fm = FileManager.default
         guard let container = fm.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.waifux.app"
+            forSecurityApplicationGroupIdentifier: "group.com.mivori.app"
         ) else { return }
 
         // 1. 缩略图：全部可重建（换壁纸/重新同步时会重新生成）。
@@ -911,7 +911,7 @@ class SettingsViewModel: ObservableObject {
         // 4. Application Support 下的应用数据
         if let supportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
             let targets = [
-                supportURL.appendingPathComponent("WaifuX"),
+                supportURL.appendingPathComponent("Mivori"),
                 supportURL.appendingPathComponent(t("wallhaven"))
             ]
             for url in targets {

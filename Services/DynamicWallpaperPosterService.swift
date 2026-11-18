@@ -70,7 +70,7 @@ actor DynamicWallpaperPosterService {
     /// 抽帧质量
     private static let jpegQuality: CGFloat = 0.85
 
-    private static let logger = Logger(subsystem: "com.waifux.app", category: "DongtaiPoster")
+    private static let logger = Logger(subsystem: "com.mivori.app", category: "DongtaiPoster")
 
     // MARK: - 状态
 
@@ -84,7 +84,7 @@ actor DynamicWallpaperPosterService {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         cacheDirectory = caches
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("DongtaiPosters", isDirectory: true)
         memoryCache.countLimit = 256
     }

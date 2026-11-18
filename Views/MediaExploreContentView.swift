@@ -163,6 +163,7 @@ struct MediaExploreContentView: View {
     @State private var headerConsumedHeight: CGFloat = 0
 
     // Workshop 筛选
+    @State private var workshopSection: WorkshopSection = .browse
     @State private var selectedWorkshopTags: Set<WorkshopSourceManager.WorkshopTag> = []
     @State private var selectedWorkshopType: WorkshopSourceManager.WorkshopTypeFilter = .all
     @State private var selectedWorkshopContentLevel: WorkshopSourceManager.WorkshopContentLevel? = .everyone
@@ -192,8 +193,6 @@ struct MediaExploreContentView: View {
         let _ = Self._printChanges()
         #endif
         GeometryReader { geometry in
-            let gridContentWidth = max(0, geometry.size.width - 56)
-
             ZStack {
                 if arcSettings.compactMode {
                     arcSettings.compactBackground
@@ -212,21 +211,17 @@ struct MediaExploreContentView: View {
                     .ignoresSafeArea()
                 }
 
-                ZStack {
-                    contentArea(
-                        gridContentWidth: gridContentWidth,
-                        fullWidth: geometry.size.width,
-                        viewportHeight: geometry.size.height
-                    )
-                        .frame(width: geometry.size.width, alignment: .leading)
-                        .frame(maxHeight: .infinity, alignment: .top)
-                        .environment(\.explorePageAtmosphereTint, exploreAtmosphere.tint)
-                        .environment(\.arcIsLightMode, arcSettings.isLightMode)
-                        .disabled(isInitialLoading)
-
-                    bottomLoadingOverlay
-
-                    scrollToTopButton
+                if workshopSourceManager.activeSource != .wallpaperEngine {
+                    browseContents(in: geometry.size)
+                } else if workshopSection == .browse {
+                    VStack(alignment: .leading, spacing: 0) {
+                        WorkshopScopePicker(selection: $workshopSection)
+                            .padding(.horizontal, 28)
+                            .padding(.top, mainTopBarContentPadding + 8)
+                        GeometryReader { pane in browseContents(in: pane.size) }
+                    }
+                } else {
+                    WorkshopLibraryView(section: $workshopSection, viewModel: viewModel)
                 }
             }
         }
@@ -305,6 +300,24 @@ struct MediaExploreContentView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .workshopSourceChanged)) { _ in
             handleSourceChange()
+        }
+    }
+
+    private func browseContents(in size: CGSize) -> some View {
+        ZStack {
+            contentArea(
+                gridContentWidth: max(0, size.width - 56),
+                fullWidth: size.width,
+                viewportHeight: size.height
+            )
+            .frame(width: size.width, alignment: .leading)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .environment(\.explorePageAtmosphereTint, exploreAtmosphere.tint)
+            .environment(\.arcIsLightMode, arcSettings.isLightMode)
+            .disabled(isInitialLoading)
+
+            bottomLoadingOverlay
+            scrollToTopButton
         }
     }
 
@@ -679,7 +692,7 @@ struct MediaExploreContentView: View {
             }
             contentHeader.padding(.top, 12)
         }
-        .padding(.top, mainTopBarContentPadding)
+        .padding(.top, workshopSourceManager.activeSource == .wallpaperEngine ? 14 : mainTopBarContentPadding)
         .padding(.bottom, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .fixedSize(horizontal: false, vertical: true)
@@ -1773,6 +1786,7 @@ struct MediaExploreContentView: View {
     }
 
     private func handleSourceChange() {
+        workshopSection = .browse
         // 仅重置 UI 筛选状态，不触发数据加载——加载由 ViewModel.$activeSource sink 统一负责
         resetAllFilters(reloadData: false)
         // 换源会改变网格几何（壁纸引擎源 = 1:1 封面 + 多一列）：即使新旧源条目数恰好相同，

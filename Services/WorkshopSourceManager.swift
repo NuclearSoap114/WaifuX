@@ -406,7 +406,7 @@ class WorkshopSourceManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     private init() {
-        activeSource = .motionBG
+        activeSource = .wallpaperEngine
         restoreState()
         refreshStoredSteamIdentity()
     }

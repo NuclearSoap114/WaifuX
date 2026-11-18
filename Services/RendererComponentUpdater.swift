@@ -197,7 +197,7 @@ private actor RendererComponentInstaller {
         guard data.count <= 256 * 1024 else { throw RendererComponentError.invalidManifest }
         let feed = try JSONDecoder().decode(RendererComponentFeed.self, from: data)
         try feed.validate()
-        let updates = RendererComponent.allCases.compactMap { component in
+        let updates = RendererComponent.allCases.filter { $0 != .web }.compactMap { component in
             feed.releases.filter {
                 $0.component == component && $0.isCompatible && $0.revision > (revisions[component] ?? 0)
             }.max { $0.revision < $1.revision }
@@ -207,7 +207,7 @@ private actor RendererComponentInstaller {
 
     func install(_ release: RendererComponentRelease, progress: @escaping @Sendable (Int64) -> Void) async throws {
         try release.validate()
-        guard release.isCompatible else { throw RendererComponentError.invalidManifest }
+        guard release.component != .web, release.isCompatible else { throw RendererComponentError.invalidManifest }
         let fm = FileManager.default
         let componentDirectory = RendererComponentStore.root.appendingPathComponent(release.component.rawValue)
         try fm.createDirectory(at: componentDirectory, withIntermediateDirectories: true,

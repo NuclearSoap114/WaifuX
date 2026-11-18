@@ -108,8 +108,8 @@ public final class NowPlayingService: ObservableObject {
     private var getNowPlayingInfo: (@convention(c) (DispatchQueue, @escaping @convention(block) (NSDictionary?) -> Void) -> Void)?
     private var getIsPlaying: (@convention(c) (DispatchQueue, @escaping @convention(block) (Bool) -> Void) -> Void)?
 
-    private let mediaQueue = DispatchQueue(label: "com.waifux.nowplaying.mediaremote", qos: .userInitiated)
-    private let scriptQueue = DispatchQueue(label: "com.waifux.nowplaying.applescript", qos: .utility)
+    private let mediaQueue = DispatchQueue(label: "com.mivori.nowplaying.mediaremote", qos: .userInitiated)
+    private let scriptQueue = DispatchQueue(label: "com.mivori.nowplaying.applescript", qos: .utility)
 
     private init() {
         mediaRemoteAvailable = loadMediaRemote()

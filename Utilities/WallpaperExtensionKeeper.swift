@@ -36,17 +36,17 @@ enum WallpaperExtensionKeeper {
 
     /// keeper CLI 模式参数（LaunchAgent ProgramArguments 的第二个元素）
     static let keeperModeArgument = "--wallpaper-keeper"
-    static let extensionBundleID = "com.waifux.app.wallpaperextension"
+    static let extensionBundleID = "com.mivori.app.wallpaperextension"
     /// LaunchAgent 开关的持久化 key（仅 App 进程读写，keeper 进程不读）
     static let launchAgentDefaultsKey = "wallpaper_extension_keeper_enabled"
-    static let launchAgentLabel = "com.waifux.wallpaperkeeper"
+    static let launchAgentLabel = "com.mivori.wallpaperkeeper"
 
     private static let extensionExecutableSuffix =
         "/WaifuXWallpaperExtension.appex/Contents/MacOS/WaifuXWallpaperExtension"
-    private static let mainExecutableName = "WaifuX"
+    private static let mainExecutableName = "Mivori"
     private static let lsregisterPath =
         "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
-    private static let log = OSLog(subsystem: "com.waifux.app", category: "WallpaperKeeper")
+    private static let log = OSLog(subsystem: "com.mivori.app", category: "WallpaperKeeper")
 
     /// 正常巡检间隔
     private static let pollIntervalSeconds: UInt32 = 10
@@ -133,10 +133,14 @@ enum WallpaperExtensionKeeper {
 
     /// nil 表示进程表不可观测；空数组才表示确实没有扩展进程。
     static func observedExtensionProcessPids() -> [pid_t]? {
-        observedProcessPids(
-            matching: { $0.hasSuffix(extensionExecutableSuffix) },
-            matchingProcessName: "WaifuXWallpaperExtension"
-        )
+        observedProcessPids(matching: ownsExtensionExecutable)
+    }
+
+    static func ownsExtensionExecutable(_ path: String) -> Bool {
+        guard path.hasSuffix(extensionExecutableSuffix) else { return false }
+        let contents = URL(fileURLWithPath: path).deletingLastPathComponent().deletingLastPathComponent()
+        let info = NSDictionary(contentsOf: contents.appendingPathComponent("Info.plist"))
+        return info?["CFBundleIdentifier"] as? String == extensionBundleID
     }
 
     private static func processPids(
@@ -148,7 +152,6 @@ enum WallpaperExtensionKeeper {
 
     private static func observedProcessPids(
         matching predicate: (String) -> Bool,
-        matchingProcessName: String? = nil,
         excludingPID excluded: pid_t? = nil
     ) -> [pid_t]? {
         let needed = proc_listallpids(nil, 0)
@@ -169,14 +172,6 @@ enum WallpaperExtensionKeeper {
             if len > 0 {
                 let bytes = buf.prefix(Int(len)).prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
                 if predicate(String(decoding: bytes, as: UTF8.self)) { result.append(pid) }
-            } else if let matchingProcessName {
-                // 路径不可读时再按短进程名识别；宁可让同名进程挡住注册，也不能误杀健康扩展。
-                var name = [CChar](repeating: 0, count: 256)
-                let nameLength = proc_name(pid, &name, UInt32(name.count))
-                if nameLength > 0 {
-                    let bytes = name.prefix(Int(nameLength)).prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
-                    if String(decoding: bytes, as: UTF8.self) == matchingProcessName { result.append(pid) }
-                }
             }
         }
         return result
@@ -306,7 +301,7 @@ enum WallpaperExtensionKeeper {
 
     static var keeperLogFileURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Logs/WaifuXKeeper.log")
+            .appendingPathComponent("Library/Logs/MivoriKeeper.log")
     }
 
     /// keeper 日志上限（256KB）

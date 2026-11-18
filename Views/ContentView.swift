@@ -217,6 +217,10 @@ private final class MainTabViewController: NSTabViewController {
                     wallpaperViewModel: wallpaperViewModel,
                     mediaViewModel: mediaViewModel
                 ))
+            case .fileOrganizer:
+                addPage(title: tab.title, view: MivoriFileOrganizerView())
+            case .desktopPet:
+                addPage(title: tab.title, view: MivoriDesktopPetView())
             }
             addedTabs.append(tab)
         }
@@ -448,6 +452,10 @@ struct ContentView: View {
         // 必须位于详情页 NavigationStack 的外层，已有详情页显示时也要能收到替换请求。
         .onReceive(NotificationCenter.default.publisher(for: .openCurrentWallpaperDetail)) { _ in
             consumePendingWallpaperDetailRequest()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openMivoriDesktopPet)) { _ in
+            updateDetailPath([])
+            navigationState.selectedTab = .desktopPet
         }
         .onChange(of: navigationState.selectedWallpaper) { _, wallpaper in
             guard let wallpaper else { return }

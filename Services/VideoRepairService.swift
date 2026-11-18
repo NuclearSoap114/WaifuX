@@ -12,7 +12,7 @@ import Foundation
 ///
 /// 设置壁纸前对候选视频统一走本服务校验：AVFoundation 能打开直接放行；打不开
 /// 且是本地文件时，用内置 ffmpeg `-c copy` 无损转封装重建 moov，产物存
-/// `Application Support/WaifuX/VideoRepairs/`（键 = 文件名+大小+mtime），修复后
+/// `Application Support/Mivori/VideoRepairs/`（键 = 文件名+大小+mtime），修复后
 /// 仍打不开才报错上浮。纯 remux 秒级完成、不重编码，跨机复用无成本。
 enum VideoRepairService {
 
@@ -88,7 +88,7 @@ enum VideoRepairService {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support")
         return appSupport
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("VideoRepairs", isDirectory: true)
     }()
 

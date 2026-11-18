@@ -553,7 +553,7 @@ final class VideoWallpaperManager: ObservableObject {
 
     /// 同步给 web daemon（wallpaperengine-cli）的热更新控制文件路径。
     /// daemon 长驻进程读此文件，避免仅依赖启动时 env。
-    static let systemWallpaperSyncControlPath = "/tmp/waifux-system-wallpaper-sync.json"
+    static let systemWallpaperSyncControlPath = "/tmp/mivori-system-wallpaper-sync.json"
 
     /// 把当前「系统壁纸同步」状态写到控制文件，供 web daemon 即时遵守。
     func publishSystemWallpaperSyncControlToWebDaemon() {
@@ -1756,7 +1756,7 @@ final class VideoWallpaperManager: ObservableObject {
                     manager.checkExtensionState()
                 }
             },
-            "com.waifux.app.wallpaper.stateChanged" as CFString,
+            "com.mivori.app.wallpaper.stateChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -1770,7 +1770,7 @@ final class VideoWallpaperManager: ObservableObject {
     private func checkExtensionState() {
         guard !BackgroundRuntimeRole.isIsolatedTest else { return }
         guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.waifux.app"
+            forSecurityApplicationGroupIdentifier: "group.com.mivori.app"
         ) else { return }
 
         let stateURL = container.appendingPathComponent("waifux-wallpaper-state.json")

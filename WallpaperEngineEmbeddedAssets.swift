@@ -94,7 +94,7 @@ enum WallpaperEngineEmbeddedAssets {
             return nil
         }
         let extractRoot = cacheBase
-            .appendingPathComponent("com.waifux.wallpaperengine", isDirectory: true)
+            .appendingPathComponent("com.mivori.wallpaperengine", isDirectory: true)
             .appendingPathComponent("embedded-assets", isDirectory: true)
             .appendingPathComponent(cacheKey, isDirectory: true)
         let assetsDir = extractRoot.appendingPathComponent("assets", isDirectory: true)
@@ -121,7 +121,7 @@ enum WallpaperEngineEmbeddedAssets {
             return nil
         }
         let extractRoot = cacheBase
-            .appendingPathComponent("com.waifux.wallpaperengine", isDirectory: true)
+            .appendingPathComponent("com.mivori.wallpaperengine", isDirectory: true)
             .appendingPathComponent("embedded-assets", isDirectory: true)
             .appendingPathComponent(cacheKey, isDirectory: true)
 
@@ -212,14 +212,14 @@ enum WallpaperEngineEmbeddedAssets {
         if let cachedRoot {
             return cachedRoot
         }
-        // 同步兜底：Helper 侧已解压过的话磁盘上有产物（caches/com.waifux.wallpaperengine/
+        // 同步兜底：Helper 侧已解压过的话磁盘上有产物（caches/com.mivori.wallpaperengine/
         // embedded-assets/<sha256>/assets + .extracted 标记）。key 是 Helper 内嵌 zip 的
         // SHA256，UI 进程算不出（无 payload），直接扫目录取 mtime 最新的有效项。
         // 纯只读探测，无解压副作用。修「重新烘焙预览黑屏」：preview() 同步取 assets，
         // 之前 cachedRoot=nil 时不传 --assets → 渲染器报「未找到 assets 目录」→ 空场景黑屏。
         let cacheBase = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         let root = cacheBase
-            .appendingPathComponent("com.waifux.wallpaperengine", isDirectory: true)
+            .appendingPathComponent("com.mivori.wallpaperengine", isDirectory: true)
             .appendingPathComponent("embedded-assets", isDirectory: true)
         guard let entries = try? FileManager.default.contentsOfDirectory(
             at: root, includingPropertiesForKeys: [.contentModificationDateKey],

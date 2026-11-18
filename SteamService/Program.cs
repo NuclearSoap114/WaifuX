@@ -76,7 +76,7 @@ while (running)
             var passwordCancellation = authenticationCancellation;
             writer.Response(command.RequestId, true);
             authenticationTask = RunAuthenticationAsync(
-                () => session.LoginWithPasswordAsync(command.Username, command.Password, command.GuardData, command.GuardCode, command.LoginId.GetValueOrDefault(), passwordCancellation.Token),
+                () => session.LoginWithPasswordAsync(command.Username, command.Password, command.GuardData, command.GuardCode, command.PreferGuardCode, command.LoginId.GetValueOrDefault(), passwordCancellation.Token),
                 writer,
                 passwordCancellation.Token);
             break;
@@ -91,7 +91,10 @@ while (running)
                 qrCancellation.Token);
             break;
         case "submitChallenge":
-            writer.Response(command.RequestId, !string.IsNullOrWhiteSpace(command.Code) && session.SubmitChallenge(command.Code), "No authentication challenge is waiting for a code.", "NO_AUTH_CHALLENGE");
+            if (!string.IsNullOrWhiteSpace(command.Code) && session.SubmitChallenge(command.Code))
+                writer.Response(command.RequestId, true);
+            else
+                writer.Response(command.RequestId, false, "No authentication challenge is waiting for a code.", "NO_AUTH_CHALLENGE");
             break;
         case "cancelLogin":
             await StopAuthenticationAsync(session, authenticationCancellation, authenticationTask).ConfigureAwait(false);

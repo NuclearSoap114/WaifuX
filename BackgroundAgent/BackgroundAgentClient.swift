@@ -330,7 +330,7 @@ final class BackgroundAgentClient: ObservableObject {
     /// launchd 里没有注册该 mach service 时，`NSXPCConnection` 报的错：
     /// `NSCocoaErrorDomain` 的 `NSXPCConnectionInvalid`（4099，系统文案即
     /// 「无法与帮助程序通信。」）；launchd 侧对应
-    /// `failed lookup: name = com.waifux.app.helper.control`。
+    /// `failed lookup: name = com.mivori.app.helper.control`。
     private static func indicatesMissingLaunchdJob(_ error: Error) -> Bool {
         let code = CocoaError.Code.xpcConnectionInvalid.rawValue
         let failure = error as NSError
@@ -516,7 +516,7 @@ final class BackgroundAgentClient: ObservableObject {
         connect()
         try await ensureCurrentHelper(watchingLaunchdLabel: mode.launchdLabel)
         try Task.checkCancellation()
-        let legacy = UserDefaults.standard.persistentDomain(forName: "com.waifux.app") ?? [:]
+        let legacy = UserDefaults.standard.persistentDomain(forName: "com.mivori.app") ?? [:]
         _ = try await perform("preferences.migrate", ["preferences": legacy])
         try Task.checkCancellation()
         try await configureMediaEnvironment()
@@ -592,7 +592,7 @@ final class BackgroundAgentClient: ObservableObject {
         let environment = ProcessInfo.processInfo.environment
         guard BackgroundRuntimeRole.isIsolatedTest,
               let service = environment["WAIFUX_HELPER_TEST_SERVICE"],
-              service.hasPrefix("com.waifux.test.helper."),
+              service.hasPrefix("com.mivori.test.helper."),
               environment["WAIFUX_HELPER_TEST_SUITE"] == service + ".preferences",
               environment["WAIFUX_HELPER_TEST_ROOT"] != nil,
               bootstrapTask == nil else { throw CocoaError(.featureUnsupported) }
@@ -619,7 +619,7 @@ final class BackgroundAgentClient: ObservableObject {
 
     func pauseIsolatedHelperForExitProbe() async throws {
         guard BackgroundRuntimeRole.isIsolatedTest, isConnected,
-              isolatedProbeService?.hasPrefix("com.waifux.test.helper.") == true else {
+              isolatedProbeService?.hasPrefix("com.mivori.test.helper.") == true else {
             throw CocoaError(.featureUnsupported)
         }
         let data = try await exchange { proxy, gate in proxy.hello { gate.finish(.success($0 as Data)) } }
@@ -632,7 +632,7 @@ final class BackgroundAgentClient: ObservableObject {
 
     func resumeIsolatedHelperAfterQuitProbe() throws {
         guard BackgroundRuntimeRole.isIsolatedTest,
-              isolatedProbeService?.hasPrefix("com.waifux.test.helper.") == true,
+              isolatedProbeService?.hasPrefix("com.mivori.test.helper.") == true,
               let pid = pausedHelperProbePID, kill(pid, SIGCONT) == 0 else { throw CocoaError(.featureUnsupported) }
         pausedHelperProbePID = nil
     }

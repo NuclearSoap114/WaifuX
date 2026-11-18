@@ -274,7 +274,7 @@ enum SceneWallpaperDesignService {
     private static func designFolderURL(for wallpaperPath: String) -> URL {
         (FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support"))
-            .appendingPathComponent("WaifuX")
+            .appendingPathComponent("Mivori")
             .appendingPathComponent(folderName, isDirectory: true)
             .appendingPathComponent(wallpaperHash(for: wallpaperPath), isDirectory: true)
     }

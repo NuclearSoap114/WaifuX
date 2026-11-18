@@ -23,7 +23,7 @@ final class DynamicWallpaperAutoPauseManager {
     /// 由轮换调度器订阅：任一屏的自动暂停记账发生翻转（进入/离开）时发出，
     /// 调度器据此取消/重排下一次定时轮换，避免到点把刚被自动暂停的壁纸重新激活。
     static let autoPauseTrackingDidChangeNotification = Notification.Name(
-        "com.waifux.autopause.trackingDidChange"
+        "com.mivori.autopause.trackingDidChange"
     )
 
     private var checkTimer: Timer?
@@ -56,7 +56,7 @@ final class DynamicWallpaperAutoPauseManager {
     /// 当前被全屏窗口覆盖的屏幕 ID 列表。
     private var fullscreenCoveredScreenIDs: Set<String> = []
     /// 全屏检测后台队列（避免 CGWindowListCopyWindowInfo 阻塞主线程）
-    private let fullscreenDetectionQueue = DispatchQueue(label: "com.waifux.fullscreen-detection", qos: .utility)
+    private let fullscreenDetectionQueue = DispatchQueue(label: "com.mivori.fullscreen-detection", qos: .utility)
     /// 因全屏覆盖而被自动暂停的原生视频屏幕。
     private var fullscreenAutoPausedScreenIDs: Set<String> = []
     /// 是否因全屏覆盖而自动暂停过 Wallpaper Engine。

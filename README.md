@@ -1,4 +1,21 @@
-# WaifuX
+# Mivori
+
+Mivori 是 [WaifuX](https://github.com/jipika/WaifuX) 的 macOS 分支。本版使用 WaifuX 的 SwiftUI 应用、Steam 服务和 Wallpaper Engine 渲染器，并加入文件整理和桌面奶蛙。
+
+- **Steam 工坊**　进入「媒体」，将来源切换到「壁纸引擎」。在「浏览」「已订阅」「本地」之间切换，查看公开作品、当前 Steam 账号的订阅和设备上的作品。账号登录支持扫码、用户名与密码、Steam Guard 验证和记住登录。用手机或邮箱完成哪一种验证，由 Steam 决定。
+- **文件整理**　在应用菜单打开「DeepSeek 设置」保存 API Key。到「文件整理」选择文件夹，勾选文件并查看发送预览。收到建议后可修改目标文件夹、应用和撤销。离线演示可直接体验完整整理流程。
+- **桌面奶蛙**　在「桌宠」开启后可拖动奶蛙，点它会显示「破崩了」。角色图集由 Maple498 创作，采用 CC BY 4.0 许可，详情见 `Brand/NaiWaAttribution`。
+
+安装包面向 Apple Silicon Mac。应用源码延续 GPL-3.0，随项目保留上游许可与依赖署名。
+
+## 构建 Mivori
+
+准备带 Metal Toolchain 的 Xcode、XcodeGen 和 arm64 macOS 构建环境。执行 `xcodegen generate`，再用 Xcode 打开 `Mivori.xcodeproj`，构建 `Mivori` scheme。生成的应用为 `Mivori.app`。如需重新构建 Steam 服务，使用仓库提供的 `scripts/build-steam-service.sh` 和 .NET 10 SDK。产品安装包由 `scripts/package-mivori.sh` 从 Release 应用生成。
+
+## WaifuX 上游说明
+
+下面保留 WaifuX 的原始项目说明。
+
 
 <p align="center">
   <a href="README.md">🇨🇳 简体中文</a> | <a href="README.en.md">🇺🇸 English</a> | <a href="README.ja.md">🇯🇵 日本語</a>

@@ -21,7 +21,7 @@ enum WaifuXUIActions {
 
         init?(url: URL) {
             guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                  components.scheme == "waifux", components.host == "ui",
+                  components.scheme == "mivori", components.host == "ui",
                   components.user == nil, components.password == nil, components.port == nil,
                   let action = Action(rawValue: String(components.path.dropFirst())),
                   action != .releaseMemory,
@@ -31,7 +31,7 @@ enum WaifuXUIActions {
         }
 
         var url: URL {
-            URL(string: "waifux://ui/\(action.rawValue)?request=\(id.uuidString)")!
+            URL(string: "mivori://ui/\(action.rawValue)?request=\(id.uuidString)")!
         }
 
         static func from(arguments: [String]) -> Request? {

@@ -295,7 +295,7 @@ private final class VideoRendererDaemon {
     /// accepting the next one so fire-and-forget maintenance commands cannot
     /// overtake a later `set` and freeze its newly-created player.
     private let commandIngressQueue = DispatchQueue(
-        label: "com.waifux.video-renderer.command-ingress",
+        label: "com.mivori.video-renderer.command-ingress",
         qos: .userInitiated
     )
     private var commandSequence: UInt64 = 0
@@ -401,7 +401,7 @@ private final class VideoRendererDaemon {
     private func installPlaybackStateObservers() {
         playbackStateFilePath = ProcessInfo.processInfo.environment["WAIFUX_VIDEO_RENDERER_LOCK_STATE_PATH"]
         playbackStateObserver = DistributedNotificationCenter.default.addObserver(
-            forName: Notification.Name("com.waifux.wallpaper.lockScreenPlaybackStateDidChange"),
+            forName: Notification.Name("com.mivori.wallpaper.lockScreenPlaybackStateDidChange"),
             object: nil,
             queue: .main
         ) { [weak self] _ in

@@ -232,7 +232,7 @@ private struct OfflineBakeQueueCheckpointStore {
             in: .userDomainMask
         ).first ?? FileManager.default.temporaryDirectory
         return support
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("SceneBake", isDirectory: true)
             .appendingPathComponent("pending-queue.json")
     }
@@ -1276,7 +1276,7 @@ enum SceneOfflineBakeService {
         reason: String
     ) async -> SceneTransitionPosterOutcome {
         let directory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("TransitionScenePosters", isDirectory: true)
         let videoURL = directory.appendingPathComponent("\(UUID().uuidString).mp4")
         let sidecarURL = videoURL.deletingPathExtension().appendingPathExtension("json")
@@ -1864,7 +1864,7 @@ enum SceneOfflineBakeService {
                 + "contentRoot=\(contentRoot.lastPathComponent) generation=\(generation)"
         )
         let temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("TransientScenePosters", isDirectory: true)
         let temporaryVideoURL = temporaryDirectory
             .appendingPathComponent("\(UUID().uuidString).mp4")
@@ -1964,7 +1964,7 @@ enum SceneOfflineBakeService {
         }
 
         let temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("StaticSceneDetection", isDirectory: true)
         let frameOutURL = temporaryDirectory.appendingPathComponent("\(UUID().uuidString).png")
         try? FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
@@ -3962,7 +3962,7 @@ enum SceneOfflineBakeService {
 
             // 动态无烘焙：1s 临时烘焙抽一帧（只为出封面，不进 SceneBakes）。
             let temporaryDirectory = FileManager.default.temporaryDirectory
-                .appendingPathComponent("WaifuX", isDirectory: true)
+                .appendingPathComponent("Mivori", isDirectory: true)
                 .appendingPathComponent("TransientScenePosters", isDirectory: true)
             let temporaryVideoURL = temporaryDirectory
                 .appendingPathComponent("\(UUID().uuidString).mp4")

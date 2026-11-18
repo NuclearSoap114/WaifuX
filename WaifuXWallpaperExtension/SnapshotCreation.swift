@@ -39,7 +39,7 @@ func requestSnapshotViaRuntime(
     reply: @escaping @Sendable (AnyObject?) -> Void
 ) {
     let targetDisplayID = displayID ?? CGMainDisplayID()
-    let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app")
+    let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")
     let sources: WallpaperSnapshotSources
     if let container {
         let paths = currentPrefsPaths(in: container, displayID: displayID)

@@ -23,7 +23,7 @@ actor VideoPreloaderActor {
     private var previewCacheDirectory: URL {
         let base = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first
             ?? fileManager.temporaryDirectory
-        let dir = base.appendingPathComponent("WaifuX/WallsflowPreview", isDirectory: true)
+        let dir = base.appendingPathComponent("Mivori/WallsflowPreview", isDirectory: true)
         try? fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }

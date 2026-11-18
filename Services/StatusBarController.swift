@@ -387,7 +387,7 @@ final class StatusBarController: NSObject {
         var image: NSImage?
 
         for name in systemImageNames {
-            if let img = NSImage(systemSymbolName: name, accessibilityDescription: "WaifuX") {
+            if let img = NSImage(systemSymbolName: name, accessibilityDescription: "Mivori") {
                 image = img
                 break
             }
@@ -400,11 +400,11 @@ final class StatusBarController: NSObject {
             button.image = image
         } else {
             // 最后的备选方案：使用文字
-            button.title = "WH"
+            button.title = "M"
             button.font = NSFont.systemFont(ofSize: 12, weight: .semibold)
         }
 
-        button.toolTip = "WaifuX"
+        button.toolTip = "Mivori"
         button.target = self
         button.action = #selector(handleStatusItemClick(_:))
         button.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -616,14 +616,14 @@ final class StatusBarController: NSObject {
         guard !entries.isEmpty else {
             button.image = originalButtonImage
             button.title = ""
-            button.toolTip = "WaifuX"
+            button.toolTip = "Mivori"
             return
         }
         let progress = entries.reduce(0) { $0 + $1.progress } / Double(entries.count)
         button.image = nil
         button.title = "\(Int((progress * 100).rounded()))% · \(entries.count)"
         button.font = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .semibold)
-        button.toolTip = "WaifuX — \(entries.count)"
+        button.toolTip = "Mivori — \(entries.count)"
     }
 
     private func rebuildTaskQueueMenu(_ entries: [TaskQueueStatusService.Entry]) {

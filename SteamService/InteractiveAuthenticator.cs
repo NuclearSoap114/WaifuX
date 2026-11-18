@@ -12,6 +12,7 @@ namespace WaifuXSteamService;
 internal sealed class InteractiveAuthenticator : IAuthenticator
 {
     private readonly ProtocolWriter writer;
+    private readonly bool preferGuardCode;
     private readonly object gate = new();
     private TaskCompletionSource<string>? pendingCode;
     private volatile bool waitingForDeviceConfirmation;
@@ -19,9 +20,10 @@ internal sealed class InteractiveAuthenticator : IAuthenticator
 
     public bool IsWaitingForDeviceConfirmation => waitingForDeviceConfirmation;
 
-    public InteractiveAuthenticator(ProtocolWriter writer)
+    public InteractiveAuthenticator(ProtocolWriter writer, bool preferGuardCode)
     {
         this.writer = writer;
+        this.preferGuardCode = preferGuardCode;
     }
 
     public void SetInitialCode(string? code)
@@ -38,7 +40,7 @@ internal sealed class InteractiveAuthenticator : IAuthenticator
             initialCode = null;
             return Task.FromResult(code);
         }
-        return WaitForCode("mobileCode", previousCodeWasIncorrect ? "Previous mobile authenticator code was rejected." : null);
+        return WaitForCode("mobileCode", previousCodeWasIncorrect);
     }
 
     public Task<string> GetEmailCodeAsync(string email, bool previousCodeWasIncorrect)
@@ -50,11 +52,12 @@ internal sealed class InteractiveAuthenticator : IAuthenticator
             initialCode = null;
             return Task.FromResult(code);
         }
-        return WaitForCode("emailCode", previousCodeWasIncorrect ? "Previous email authentication code was rejected." : email);
+        return WaitForCode("emailCode", previousCodeWasIncorrect);
     }
 
     public Task<bool> AcceptDeviceConfirmationAsync()
     {
+        if (preferGuardCode) return Task.FromResult(false);
         waitingForDeviceConfirmation = true;
         writer.AuthState("waitingMobile");
         return Task.FromResult(true);
@@ -83,11 +86,11 @@ internal sealed class InteractiveAuthenticator : IAuthenticator
         source?.TrySetCanceled();
     }
 
-    private Task<string> WaitForCode(string state, string? message)
+    private Task<string> WaitForCode(string state, bool previousCodeRejected)
     {
         var source = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         lock (gate) pendingCode = source;
-        writer.AuthState(state, message: message);
+        writer.AuthState(state, previousCodeRejected: previousCodeRejected);
         return source.Task;
     }
 }

@@ -30,7 +30,7 @@ enum RendererComponent: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
     func signingIdentifier(for path: String) -> String {
-        "com.waifux.component.\(rawValue).\(URL(fileURLWithPath: path).lastPathComponent)"
+        "com.mivori.component.\(rawValue).\(URL(fileURLWithPath: path).lastPathComponent)"
     }
 }
 
@@ -143,7 +143,7 @@ enum RendererComponentStore {
                           ?? NSTemporaryDirectory()).appendingPathComponent("ComponentUpdates")
         } else {
             support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("WaifuX/RendererComponents", isDirectory: true)
+                .appendingPathComponent("Mivori/RendererComponents", isDirectory: true)
         }
         return support
     }
@@ -193,27 +193,11 @@ enum RendererComponentStore {
     /// Keep an already-running Web daemon paired with its own client after installing an update.
     /// The daemon checks the client's executable path; using a new path would orphan the old daemon.
     static func runningWebExecutableURL() -> URL? {
-        let pidFile = URL(fileURLWithPath: "/tmp/wallpaperengine-cli.pid")
+        let pidFile = URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli.pid")
         guard !BackgroundRuntimeRole.isIsolatedTest,
               let pid = OwnedDaemonPIDFile.readPID(at: pidFile),
-              let identity = OwnedProcessIdentity.capture(pid) else { return nil }
-        let url = URL(fileURLWithPath: identity.executablePath)
-        var allowed = WaifuXHostBundle.resourceCandidates(named: RendererComponent.web.executable)
-        allowed += [
-            Bundle.main.bundleURL.deletingLastPathComponent().appendingPathComponent("wallpaperengine-cli"),
-            URL(fileURLWithPath: "/Volumes/mac/CodeLibrary/Claude/WallHaven/wallpaperengine-cli"),
-            URL(fileURLWithPath: "/Volumes/mac/CodeLibrary/Claude/WallHaven/Resources/wallpaperengine-cli")
-        ]
-        // Retained immutable releases can still own the daemon after active.json has changed.
-        let directory = url.deletingLastPathComponent()
-        if directory.deletingLastPathComponent().standardizedFileURL == root.appendingPathComponent("web").standardizedFileURL,
-           let data = try? Data(contentsOf: directory.appendingPathComponent("receipt.json")),
-           let release = try? JSONDecoder().decode(RendererComponentRelease.self, from: data),
-           release.component == .web, (try? release.validate()) != nil,
-           directory.lastPathComponent == release.directoryName,
-           (try? validateFiles(release, in: directory)) != nil {
-            allowed.append(directory.appendingPathComponent(RendererComponent.web.executable))
-        }
+              OwnedProcessIdentity.capture(pid) != nil else { return nil }
+        let allowed = WaifuXHostBundle.resourceCandidates(named: RendererComponent.web.executable)
         guard let running = OwnedDaemonPIDFile.identity(at: pidFile, expectedExecutables: allowed) else { return nil }
         return URL(fileURLWithPath: running.executablePath)
     }

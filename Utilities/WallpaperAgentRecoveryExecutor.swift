@@ -7,7 +7,7 @@ import Darwin
 enum WallpaperAgentRecoveryTargetPolicy {
     static let bundleID = "com.apple.wallpaper.agent"
     static let executable = "/System/Library/CoreServices/WallpaperAgent.app/Contents/MacOS/WallpaperAgent"
-    static let provider = "com.waifux.app.wallpaperextension"
+    static let provider = "com.mivori.app.wallpaperextension"
 
     struct Scope: Equatable, Sendable {
         let displayID: UInt32

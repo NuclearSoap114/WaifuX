@@ -83,7 +83,7 @@ final class LocalImageThumbnailCache {
 
     private init() {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)
-        cacheDirectory = caches[0].appendingPathComponent("WaifuX/LocalImageThumbnails", isDirectory: true)
+        cacheDirectory = caches[0].appendingPathComponent("Mivori/LocalImageThumbnails", isDirectory: true)
         try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
         existenceCache.countLimit = 4000
     }

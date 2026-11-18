@@ -512,7 +512,7 @@ final class VideoOptimizationRecordStore {
             in: .userDomainMask
         ).first ?? fileManager.temporaryDirectory
         return applicationSupport
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("VideoOptimization", isDirectory: true)
             .appendingPathComponent("Records", isDirectory: true)
     }

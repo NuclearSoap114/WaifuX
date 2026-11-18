@@ -2,7 +2,7 @@ import Foundation
 import AppKit
 
 /// 下载路径管理器 - 统一管理壁纸和媒体的下载路径
-/// 默认存储在 Application Support/WaifuX，支持用户自定义到其他目录。
+/// 默认存储在 Application Support/Mivori，支持用户自定义到其他目录。
 @MainActor
 final class DownloadPathManager {
     static let shared = DownloadPathManager()
@@ -30,7 +30,7 @@ final class DownloadPathManager {
     var libraryRootFolderURLSnapshot: URL? {
         if BackgroundRuntimeRole.isIsolatedTest {
             return ProcessInfo.processInfo.environment["WAIFUX_HELPER_TEST_ROOT"].map {
-                URL(fileURLWithPath: $0, isDirectory: true).appendingPathComponent("WaifuX", isDirectory: true)
+                URL(fileURLWithPath: $0, isDirectory: true).appendingPathComponent("Mivori", isDirectory: true)
             }
         }
         guard libraryRootSnapshotBookmark == defaults.data(forKey: Self.customDownloadRootBookmarkKey),
@@ -59,13 +59,13 @@ final class DownloadPathManager {
         }.value
         guard defaults.data(forKey: Self.customDownloadRootBookmarkKey) == bookmark else { return }
         let fallback = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
         let previous = libraryRootSnapshot ?? savedPath.map {
-            URL(fileURLWithPath: $0, isDirectory: true).appendingPathComponent("WaifuX", isDirectory: true)
+            URL(fileURLWithPath: $0, isDirectory: true).appendingPathComponent("Mivori", isDirectory: true)
         } ?? fallback
         if let parent {
             ensureSecurityScopedAccess(to: parent)
-            libraryRootSnapshot = parent.appendingPathComponent("WaifuX", isDirectory: true)
+            libraryRootSnapshot = parent.appendingPathComponent("Mivori", isDirectory: true)
             if savedPath != parent.path { defaults.set(parent.path, forKey: Self.customDownloadRootPathKey) }
         } else { libraryRootSnapshot = fallback }
         libraryRootSnapshotBookmark = bookmark
@@ -90,21 +90,21 @@ final class DownloadPathManager {
         return rootFolderURL.path
     }
 
-    /// 根目录: 默认 ~/Library/Application Support/WaifuX/，或用户自定义目录下 WaifuX/
+    /// 根目录: 默认 ~/Library/Application Support/Mivori/，或用户自定义目录下 WaifuX/
     /// 自定义目录会先恢复 security-scoped 访问，确保导入/下载写到设置里的存储位置。
     var rootFolderURL: URL {
         if BackgroundRuntimeRole.isIsolatedTest, let root = ProcessInfo.processInfo.environment["WAIFUX_HELPER_TEST_ROOT"] {
-            return URL(fileURLWithPath: root).appendingPathComponent("WaifuX", isDirectory: true)
+            return URL(fileURLWithPath: root).appendingPathComponent("Mivori", isDirectory: true)
         }
         let url: URL
         if let customRoot = resolveCustomRootURL() {
             ensureSecurityScopedAccess(to: customRoot)
-            url = customRoot.appendingPathComponent("WaifuX", isDirectory: true)
+            url = customRoot.appendingPathComponent("Mivori", isDirectory: true)
         } else {
             stopSecurityScopedAccessIfNeeded()
             url = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)
                 .first!
-                .appendingPathComponent("WaifuX", isDirectory: true)
+                .appendingPathComponent("Mivori", isDirectory: true)
         }
         libraryRootSnapshot = url
         libraryRootSnapshotBookmark = defaults.data(forKey: Self.customDownloadRootBookmarkKey)
@@ -257,7 +257,7 @@ final class DownloadPathManager {
         }
     }
 
-    /// 恢复为默认目录（Application Support/WaifuX）
+    /// 恢复为默认目录（Application Support/Mivori）
     func resetToDefaultRoot() {
         stopSecurityScopedAccessIfNeeded()
         defaults.removeObject(forKey: Self.customDownloadRootBookmarkKey)

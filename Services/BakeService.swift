@@ -34,7 +34,7 @@ struct BakeVideoResult: Sendable, Codable {
 @MainActor
 final class BakeService: ObservableObject {
     static let shared = BakeService()
-    private static let rendererWrapperBundleIdentifier = "com.waifux.wallpaperwgpu.bake.wrapper"
+    private static let rendererWrapperBundleIdentifier = "com.mivori.wallpaperwgpu.bake.wrapper"
     private static let minimumCaptureWarmup: TimeInterval = 8.0
     private static let minimumSceneReadyWarmup: TimeInterval = 2.0
     private static let maximumSceneReadyWait: TimeInterval = 24.0
@@ -1410,7 +1410,7 @@ final class BakeService: ObservableObject {
     /// 保存首帧为静态 fallback 壁纸（锁屏用）
     private func saveStaticFrame(_ image: CGImage, cacheKey: String) {
         let cacheDir = URL(fileURLWithPath: NSHomeDirectory())
-            .appendingPathComponent("Library/Caches/com.waifux.wallpaperengine/captured-frames")
+            .appendingPathComponent("Library/Caches/com.mivori.wallpaperengine/captured-frames")
         try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
         let fileURL = cacheDir.appendingPathComponent("\(cacheKey).jpg")
 
@@ -1580,7 +1580,7 @@ final class BakeService: ObservableObject {
                 ?? URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
         }
         let bundleURL = cacheBase
-            .appendingPathComponent("com.waifux.wallpaperengine", isDirectory: true)
+            .appendingPathComponent("com.mivori.wallpaperengine", isDirectory: true)
             .appendingPathComponent("BakeRendererWrapper", isDirectory: true)
             .appendingPathComponent("WallpaperWGPUBakeAgent.app", isDirectory: true)
         let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)

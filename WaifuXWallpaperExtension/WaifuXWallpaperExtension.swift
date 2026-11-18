@@ -166,13 +166,13 @@ struct WallpaperExtensionConfiguration: AppExtensionConfiguration {
 ///
 /// ⚠️ 必须作为模块级常量而非 `static let`：Darwin 通知回调是 C 函数指针，
 /// 不能捕获 dynamic Self；引用模块顶层 `let` 不属于捕获，可编译通过。
-let wallpaperCommandQueue = DispatchQueue(label: "com.waifux.wallpaperextension.command", qos: .utility)
+let wallpaperCommandQueue = DispatchQueue(label: "com.mivori.wallpaperextension.command", qos: .utility)
 
 @main
 final class WaifuXWallpaperExtension: NSObject, AppExtension {
     typealias Configuration = WallpaperExtensionConfiguration
     private static let wakeRecoveryGeneration = OSAllocatedUnfairLock(initialState: 0)
-    private static let hostAppBundleIdentifier = "com.waifux.app"
+    private static let hostAppBundleIdentifier = "com.mivori.app"
     private var commandPollTimer: DispatchSourceTimer?
 
     var configuration: WallpaperExtensionConfiguration {
@@ -223,7 +223,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                     reason: "appWillTerminate"
                 )
             },
-            "com.waifux.app.wallpaper.appWillTerminate" as CFString,
+            "com.mivori.app.wallpaper.appWillTerminate" as CFString,
             nil,
             .deliverImmediately
         )
@@ -252,7 +252,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
     private static func reconcileHostApplicationPresence() {
         // The UI is allowed to exit while the Helper still owns IPC/playback.
         // Do not switch into self-hosted playback merely because its window/app closed.
-        let isRunning = [hostAppBundleIdentifier, "com.waifux.app.helper"].contains { identifier in
+        let isRunning = [hostAppBundleIdentifier, "com.mivori.app.helper"].contains { identifier in
             !NSRunningApplication.runningApplications(withBundleIdentifier: identifier).isEmpty
         }
         let prefs = WallpaperPrefs.shared
@@ -291,7 +291,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                 extLog("[Extension] Released \(removed.count) active context(s), exiting")
                 exit(0)
             },
-            "com.waifux.app.wallpaper.extensionReload" as CFString,
+            "com.mivori.app.wallpaper.extensionReload" as CFString,
             nil,
             .deliverImmediately
         )
@@ -503,7 +503,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                     WaifuXWallpaperExtension.drainPendingSocketCommands(reason: "commandsChanged")
                 }
             },
-            "com.waifux.app.wallpaper.commandsChanged" as CFString,
+            "com.mivori.app.wallpaper.commandsChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -523,7 +523,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
 
     @discardableResult
     private static func pollAndHandleSocketCommand() -> Bool {
-        guard let socketPath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app")?
+        guard let socketPath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")?
             .appendingPathComponent("socket/extension.ipc").path
         else { return false }
 
@@ -853,7 +853,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                     WaifuXWallpaperExtension.drainPendingSocketCommands(reason: "prefsChanged")
                 }
             },
-            "com.waifux.app.wallpaper.prefsChanged" as CFString,
+            "com.mivori.app.wallpaper.prefsChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -917,10 +917,10 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
 // MARK: - Logging
 
 private var extLogFileURL: URL {
-    if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app") {
-        return container.appendingPathComponent("waifux-extension.log")
+    if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") {
+        return container.appendingPathComponent("mivori-extension.log")
     }
-    return URL(fileURLWithPath: "/tmp/waifux-extension.log")
+    return URL(fileURLWithPath: "/tmp/mivori-extension.log")
 }
 
 /// 扩展日志文件存储：O_APPEND 原子追加 + 大小上限 + 同 inode 保尾截断。

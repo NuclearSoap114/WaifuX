@@ -479,7 +479,7 @@ enum ExtDisplayGeometry {
 
 /// 扩展端从 App Group JSON 读取指定 displayID 的 crop 配置。
 enum ExtCropPrefs {
-    private static let appGroupID = "group.com.waifux.app"
+    private static let appGroupID = "group.com.mivori.app"
     private static let jsonName = "waifux-crop-prefs.json"
 
     static func settings(forDisplayID displayID: UInt32) -> ExtCropSettings {

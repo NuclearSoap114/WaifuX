@@ -6,7 +6,6 @@ import Kingfisher
 import ExceptionHandling
 import WebKit
 import Darwin
-import Sparkle
 
 /// 后台 Helper 连接横幅的挂载位置。
 ///
@@ -141,7 +140,7 @@ enum AppExitDiagnostics {
             supportURL = URL(fileURLWithPath: root, isDirectory: true)
         }
         #endif
-        let dirURL = supportURL.appendingPathComponent("WaifuX", isDirectory: true)
+        let dirURL = supportURL.appendingPathComponent("Mivori", isDirectory: true)
         try? FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
         // 退出日志按进程生命周期累积（每次退出写几行），长期会到几百 KB。
         // 打开前按上限截尾，避免无限增长；用 O_TRUNC 原地重写保持 inode。
@@ -460,12 +459,13 @@ struct WaifuXApp {
 }
 
 @MainActor
-class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcurrency SPUStandardUserDriverDelegate, @preconcurrency SPUUpdaterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var window: NSWindow?
     // ⚠️ 延迟初始化 SettingsViewModel，不在 AppDelegate 属性初始化阶段创建
     // 避免其 @Published didSet 在 applicationDidFinishLaunching 之前写 UserDefaults
     private var settingsViewModel: SettingsViewModel?
     private var settingsWindowController: NSWindowController?
+    private var deepSeekWindow: NSWindow?
     private var uiRequestRouter = WaifuXUIActions.RequestRouter()
     private var mainWindowDataRestored = false
     /// 登录项启动标记：`oapp` 事件带 `lgit` 即为开机自启动。
@@ -474,10 +474,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
     private var launchedAsLoginItem = false
     /// 窗口隐藏后延迟释放视图树的任务，用于回收 IOSurface / CoreAnimation 等系统图形缓存
     private var delayedReleaseTask: Task<Void, Never>?
-    /// Sparkle 自动更新控制器（检测 + 内置弹窗 + 自动安装）
-    private var updaterController: SPUStandardUpdaterController!
-    /// 更新检查期间暂时隐藏设置窗口，避免遮挡 Sparkle 的状态或结果窗口。
-    private var shouldRestoreSettingsWindowAfterUpdateCheck = false
     /// 静态访问器，供 Settings 等外部触发更新检查
     static var shared: AppDelegate?
 
@@ -510,7 +506,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
 
     // MARK: - 窗口自动保存名称
     private enum WindowAutosaveName {
-        static let mainWindow = "WaifuXMainWindow"
+        static let mainWindow = "MivoriMainWindow"
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -522,6 +518,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
         // 154 在用户机上留下 launchd 找不到 App 路径的坏记录（exit 78）。
         installHelperQuitHandlers()
         WaifuXPreferences.shared.loadLegacyPreferences()
+        if WaifuXPreferences.shared.object(forKey: "system_wallpaper_sync_enabled") == nil {
+            WaifuXPreferences.shared.set(false, forKey: "system_wallpaper_sync_enabled")
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(reloadImportedUICaches(_:)),
                                                name: .cloudSyncSettingsImported, object: nil)
         BackgroundAgentClient.shared.start()
@@ -560,15 +559,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
         // _postWindowNeedsLayout 在 _layoutViewTree 期间被触发时会抛出此异常
         setupLayoutExceptionHandler()
 
-        // 初始化 Sparkle 自动更新（检测 + 内置弹窗 + 自动安装）
-        // 拆架构分发：appcast 每个版本有 arm64 / x86_64 两个 item（sparkle:channel），
-        // 这里按当前包架构声明 allowedChannels，Sparkle 只会选中对应架构的更新包。
-        updaterController = SPUStandardUpdaterController(
-            startingUpdater: true,
-            updaterDelegate: self,
-            userDriverDelegate: self
-        )
-
         // 状态栏由 Helper 持有；UI 只接收明确的窗口/操作请求。
         WaifuXUIActions.handler = { [weak self] action in
             switch action {
@@ -602,11 +592,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.restoreAllDataAsync()
-            // 系统壁纸缓存清理只在这里激活：执行者刻意是主 App，因为要清理的目标在
-            // wallpaper agent 的容器里、受 TCC 保护，而授权对象必须是隐私面板里可见的 WaifuX
-            // （Helper 藏在 Contents/Helpers/ 下，用户既找不到也拖不进去）。
-            // noteAppLaunch 内部自带 90 秒错峰 + 10 分钟节流 + 24h 兜底，不阻塞启动。
-            WallpaperSystemCacheJanitor.shared.noteAppLaunch()
+            MivoriDesktopPet.shared.restoreVisibility()
+
             var actions = self.uiRequestRouter.start(arguments: CommandLine.arguments)
             if self.launchedAsLoginItem, WaifuXPreferences.shared.bool(forKey: "launch_at_login") {
                 // 开机自启动：Helper 负责恢复壁纸，主窗口不再自动弹出。
@@ -622,63 +609,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
             }
         }
 
-        // Sparkle 自动按 SUScheduledCheckInterval (24h) 检查更新，无需手动触发
     }
 
-    /// 触发 Sparkle 更新检查（供 Settings "检查更新" 按钮调用）
     func checkForUpdates() {
-        if let settingsWindow = settingsWindowController?.window, settingsWindow.isVisible {
-            shouldRestoreSettingsWindowAfterUpdateCheck = true
-            settingsWindow.orderOut(nil)
-        }
-        updaterController.checkForUpdates(nil)
-    }
-
-    /// Sparkle 按架构分发：只接受与当前包架构一致的 channel。
-    /// appcast 中每个版本的 item 带 <sparkle:channel>arm64|x86_64</sparkle:channel>，
-    /// 旧版 universal 客户端未声明 channel，会自动忽略所有带 channel 的 item（不会误装错架构包）。
-    func allowedChannels(for updater: SPUUpdater) -> Set<String> {
-        [WallpaperEngineAvailability.currentArchitecture]
-    }
-
-    /// Share manual/scheduled Sparkle check cycles, then offer component updates in their own window.
-    /// Waiting for the app-update session to finish avoids competing update prompts.
-    func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: Error?) {
-        RendererComponentUpdater.shared.check()
-    }
-
-    func standardUserDriverWillShowModalAlert() {
-        hideSettingsWindowForUpdateCheck()
-    }
-
-    func standardUserDriverDidShowModalAlert() {
-        restoreSettingsWindowAfterUpdateCheck()
-    }
-
-    func standardUserDriverWillHandleShowingUpdate(
-        _ handleShowingUpdate: Bool,
-        forUpdate update: SUAppcastItem,
-        state: SPUUserUpdateState
-    ) {
-        guard handleShowingUpdate else { return }
-        hideSettingsWindowForUpdateCheck()
-    }
-
-    func standardUserDriverWillFinishUpdateSession() {
-        restoreSettingsWindowAfterUpdateCheck()
-    }
-
-    private func hideSettingsWindowForUpdateCheck() {
-        guard let settingsWindow = settingsWindowController?.window, settingsWindow.isVisible else { return }
-        shouldRestoreSettingsWindowAfterUpdateCheck = true
-        settingsWindow.orderOut(nil)
-    }
-
-    private func restoreSettingsWindowAfterUpdateCheck() {
-        guard shouldRestoreSettingsWindowAfterUpdateCheck else { return }
-        shouldRestoreSettingsWindowAfterUpdateCheck = false
-        guard let settingsWindow = settingsWindowController?.window else { return }
-        WindowSpaceCoordinator.show(settingsWindow)
+        let notice = NSAlert()
+        notice.messageText = "Mivori 更新"
+        notice.informativeText = "此版本通过 Mivori 安装包更新。"
+        notice.addButton(withTitle: "好")
+        notice.runModal()
     }
 
     // MARK: - 延迟恢复共享 UI 数据；探索页数据在主窗口打开时恢复
@@ -948,7 +886,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
                 defer: false
             )
 
-            window?.title = "WaifuX"
+            window?.title = "Mivori"
             window?.titlebarAppearsTransparent = true
             window?.titleVisibility = .hidden
             window?.isOpaque = true
@@ -1209,14 +1147,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
 
         // App 菜单
         let appMenuItem = NSMenuItem()
-        let appMenu = NSMenu(title: "WaifuX")
-        appMenu.addItem(NSMenuItem(title: "About WaifuX", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
+        let appMenu = NSMenu(title: "Mivori")
+        appMenu.addItem(NSMenuItem(title: "关于 Mivori", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
         let settingsItem = NSMenuItem(title: t("settings") + "…", action: #selector(showSettingsWindow(_:)), keyEquivalent: ",")
         settingsItem.target = self
         appMenu.addItem(settingsItem)
+        let deepSeekItem = NSMenuItem(title: "DeepSeek 设置…", action: #selector(openMivoriDeepSeekSettings(_:)), keyEquivalent: "")
+        deepSeekItem.target = self
+        appMenu.addItem(deepSeekItem)
+        let petItem = NSMenuItem(title: "显示或隐藏奶蛙", action: #selector(toggleMivoriPet(_:)), keyEquivalent: "")
+        petItem.target = self
+        appMenu.addItem(petItem)
         appMenu.addItem(NSMenuItem.separator())
-        appMenu.addItem(withTitle: "Hide WaifuX", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
-        let quitItem = NSMenuItem(title: "Quit WaifuX", action: #selector(quitApplicationFromMainMenu(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "隐藏 Mivori", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        let quitItem = NSMenuItem(title: "退出 Mivori", action: #selector(quitApplicationFromMainMenu(_:)), keyEquivalent: "q")
         quitItem.target = self
         appMenu.addItem(quitItem)
         appMenuItem.submenu = appMenu
@@ -1248,6 +1192,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
 
     @objc private func quitApplicationFromMainMenu(_ sender: Any?) {
         quitApplication()
+    }
+
+    @objc private func toggleMivoriPet(_ sender: Any?) {
+        let pet = MivoriDesktopPet.shared
+        pet.setVisible(!pet.isVisible)
+    }
+
+    @objc private func openMivoriDeepSeekSettings(_ sender: Any?) {
+        updateActivationPolicy(showDockIcon: true)
+        if deepSeekWindow == nil {
+            let settings = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 570, height: 380),
+                styleMask: [.titled, .closable, .resizable],
+                backing: .buffered,
+                defer: false
+            )
+            settings.title = "DeepSeek 设置"
+            settings.identifier = NSUserInterfaceItemIdentifier("MivoriDeepSeekSettings")
+            settings.isReleasedWhenClosed = false
+            settings.tabbingMode = .disallowed
+            settings.contentView = NSHostingView(rootView: MivoriDeepSeekSettingsView())
+            WindowSpaceCoordinator.prepare(settings)
+            settings.center()
+            deepSeekWindow = settings
+        }
+        if let deepSeekWindow {
+            WindowSpaceCoordinator.show(deepSeekWindow)
+        }
     }
 
     @available(macOS 26.0, *)
@@ -1341,7 +1313,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
     nonisolated private func isExtensionElected(extensionURL: URL) -> Bool {
         let output = processOutput(
             launchPath: "/usr/bin/pluginkit",
-            arguments: ["-m", "-v", "-i", "com.waifux.app.wallpaperextension"]
+            arguments: ["-m", "-v", "-i", "com.mivori.app.wallpaperextension"]
         )
         return WallpaperExtensionElection.isElected(
             output: output,
@@ -1376,7 +1348,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
         // pluginkit -a 只注册不启用，必须显式 -e use 才能让 WallpaperAgent 加载扩展。
         runRegistrationTool(
             "/usr/bin/pluginkit",
-            arguments: ["-e", "use", "-i", "com.waifux.app.wallpaperextension"],
+            arguments: ["-e", "use", "-i", "com.mivori.app.wallpaperextension"],
             label: "pluginkit enable"
         )
     }
@@ -1387,7 +1359,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
         let targetPath = extensionURL.standardizedFileURL.path
         let output = processOutput(
             launchPath: "/usr/bin/pluginkit",
-            arguments: ["-m", "-v", "-i", "com.waifux.app.wallpaperextension"]
+            arguments: ["-m", "-v", "-i", "com.mivori.app.wallpaperextension"]
         )
         guard WallpaperExtensionElection.isElected(output: output, targetPath: targetPath) else {
             if attempt < 1 {
@@ -1411,7 +1383,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
             let standardized = url.standardizedFileURL
             let path = standardized.path
             guard seen.insert(path).inserted else { return }
-            guard wallpaperExtensionBundleID(at: standardized) == "com.waifux.app.wallpaperextension" else {
+            guard wallpaperExtensionBundleID(at: standardized) == "com.mivori.app.wallpaperextension" else {
                 return
             }
             if !path.hasPrefix(currentAppURL.path + "/") {
@@ -1454,7 +1426,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
     nonisolated private func plugInKitWallpaperExtensionCandidates() -> [URL] {
         let output = processOutput(
             launchPath: "/usr/bin/pluginkit",
-            arguments: ["-m", "-A", "-D", "-v", "-i", "com.waifux.app.wallpaperextension"]
+            arguments: ["-m", "-A", "-D", "-v", "-i", "com.mivori.app.wallpaperextension"]
         )
 
         var result: [URL] = []
@@ -1515,7 +1487,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
             DispatchQueue.main.sync { NSWorkspace.shared.runningApplications }
         }
         let staleApps = runningApps.compactMap { app -> (app: NSRunningApplication, path: String)? in
-            guard app.bundleIdentifier == "com.waifux.app.wallpaperextension",
+            guard app.bundleIdentifier == "com.mivori.app.wallpaperextension",
                   let executableURL = app.executableURL?.standardizedFileURL,
                   !executableURL.path.hasPrefix(currentPrefix) else {
                 return nil
@@ -1539,33 +1511,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
     }
 
     nonisolated private func terminateStaleWallpaperExtensionProcessesByPID(currentAppURL: URL) {
-        let currentPrefix = currentAppURL.standardizedFileURL.path + "/"
-        let output = processOutput(
-            launchPath: "/bin/ps",
-            arguments: ["-axo", "pid=,command="]
-        )
-
-        for line in output.split(separator: "\n") {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            guard let firstSpace = trimmed.firstIndex(where: { $0 == " " || $0 == "\t" }) else { continue }
-
-            let pidText = trimmed[..<firstSpace].trimmingCharacters(in: .whitespaces)
-            let command = trimmed[firstSpace...].trimmingCharacters(in: .whitespaces)
-            guard let pid = Int32(pidText),
-                  command.contains("WaifuXWallpaperExtension.appex/Contents/MacOS/WaifuXWallpaperExtension"),
-                  !command.hasPrefix(currentPrefix) else {
-                continue
-            }
-
-            if kill(pid, SIGTERM) == 0 {
-                if waitForProcessExit(pid: pid, timeout: 2.0) {
-                    print("[WaifuXApp] Terminated stale wallpaper extension pid=\(pid): \(command)")
-                } else {
-                    let forced = forceKillProcessIfNeeded(pid: pid, label: command)
-                    print("[WaifuXApp] Stale wallpaper extension pid=\(pid) required force kill: forced=\(forced) command=\(command)")
-                }
-            } else {
-                print("[WaifuXApp] Failed to terminate stale wallpaper extension pid=\(pid): errno=\(errno)")
+        let currentPrefix = currentAppURL.resolvingSymlinksInPath().path + "/"
+        for pid in WallpaperExtensionKeeper.observedExtensionProcessPids() ?? [] {
+            guard let process = OwnedProcessIdentity.capture(pid),
+                  WallpaperExtensionKeeper.ownsExtensionExecutable(process.executablePath),
+                  !process.executablePath.hasPrefix(currentPrefix) else { continue }
+            if process.signal(SIGTERM), !waitForProcessExit(pid: pid, timeout: 2.0) {
+                process.signal(SIGKILL)
             }
         }
     }
@@ -1664,7 +1616,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, @preconcur
         let settingsWindowVisible = settingsWindowController?.window.map {
             $0.isVisible && !$0.isMiniaturized
         } ?? false
-        guard !mainWindowVisible, !settingsWindowVisible else { return }
+        let deepSeekVisible = deepSeekWindow.map { $0.isVisible && !$0.isMiniaturized } ?? false
+        guard !mainWindowVisible, !settingsWindowVisible, !deepSeekVisible else { return }
 
         if hideDockIcon {
             updateActivationPolicy(showDockIcon: false)

@@ -70,23 +70,26 @@ internal sealed class SteamSession : IAsyncDisposable
     public SteamSession(ProtocolWriter writer)
     {
         this.writer = writer;
-        var configuration = SteamConfiguration.Create(builder => builder
-            .WithConnectionTimeout(TimeSpan.FromSeconds(6))
-            .WithHttpClientFactory(_ =>
+        var useProxiedTransport = Environment.GetEnvironmentVariable("MIVORI_STEAM_PROXY_TRANSPORT") == "websocket";
+        var configuration = SteamConfiguration.Create(builder =>
         {
-            var sockets = new SocketsHttpHandler
+            if (useProxiedTransport) builder.WithProtocolTypes(ProtocolTypes.WebSocket);
+            builder.WithConnectionTimeout(TimeSpan.FromSeconds(6)).WithHttpClientFactory(_ =>
             {
-                PooledConnectionLifetime = TimeSpan.FromMinutes(10),
-                ConnectTimeout = TimeSpan.FromSeconds(20)
-            };
-            var httpClient = new HttpClient(new CountingHandler(sockets), true)
-            {
-                Timeout = Timeout.InfiniteTimeSpan
-            };
-            var version = typeof(SteamClient).Assembly.GetName().Version?.ToString(3) ?? "3.4.0";
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($"SteamKit/{version}");
-            return httpClient;
-        }));
+                var sockets = new SocketsHttpHandler
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(10),
+                    ConnectTimeout = TimeSpan.FromSeconds(20)
+                };
+                var httpClient = new HttpClient(new CountingHandler(sockets), true)
+                {
+                    Timeout = Timeout.InfiniteTimeSpan
+                };
+                var version = typeof(SteamClient).Assembly.GetName().Version?.ToString(3) ?? "3.4.0";
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($"SteamKit/{version}");
+                return httpClient;
+            });
+        });
         this.configuration = configuration;
         client = new SteamClient(configuration);
         callbacks = new CallbackManager(client);
@@ -127,7 +130,7 @@ internal sealed class SteamSession : IAsyncDisposable
         }
     }
 
-    public async Task LoginWithPasswordAsync(string username, string password, string? guardData, string? guardCode, uint loginId, CancellationToken cancellationToken)
+    public async Task LoginWithPasswordAsync(string username, string password, string? guardData, string? guardCode, bool preferGuardCode, uint loginId, CancellationToken cancellationToken)
     {
         CancelRecovery();
         var effectiveLoginId = NormalizeLoginId(loginId);
@@ -136,7 +139,7 @@ internal sealed class SteamSession : IAsyncDisposable
         {
             CancelAuthentication();
             authCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, lifetime.Token);
-            var loginAuthenticator = new InteractiveAuthenticator(writer);
+            var loginAuthenticator = new InteractiveAuthenticator(writer, preferGuardCode || !string.IsNullOrWhiteSpace(guardCode));
             loginAuthenticator.SetInitialCode(guardCode);
             authenticator = loginAuthenticator;
             writer.AuthState("connecting", username);
@@ -149,7 +152,7 @@ internal sealed class SteamSession : IAsyncDisposable
                     IsPersistentSession = true,
                     GuardData = guardData,
                     Authenticator = loginAuthenticator,
-                    DeviceFriendlyName = "WaifuX for macOS"
+                    DeviceFriendlyName = "Mivori for macOS"
                 })
                 .WaitAsync(authCancellation.Token)
                 .ConfigureAwait(false);
@@ -186,7 +189,7 @@ internal sealed class SteamSession : IAsyncDisposable
             var session = await client.Authentication.BeginAuthSessionViaQRAsync(new AuthSessionDetails
                 {
                     IsPersistentSession = true,
-                    DeviceFriendlyName = "WaifuX for macOS"
+                    DeviceFriendlyName = "Mivori for macOS"
                 })
                 .WaitAsync(authCancellation.Token)
                 .ConfigureAwait(false);

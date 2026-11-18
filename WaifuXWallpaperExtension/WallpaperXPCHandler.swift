@@ -52,7 +52,7 @@ private final class WallpaperPrefsChangeObserver: @unchecked Sendable {
                     .takeUnretainedValue()
                 dispatcher.dispatchPrefsChanged()
             },
-            "com.waifux.app.wallpaper.prefsChanged" as CFString,
+            "com.mivori.app.wallpaper.prefsChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -785,7 +785,7 @@ final class WallpaperXPCHandler: NSObject, WallpaperExtensionXPCProtocol {
             let currentImagePath: String?
             let currentImagePaths: [String: String]?
         }
-        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app") else {
+        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") else {
             return (nil, nil, true)
         }
         let prefsURL = container.appendingPathComponent("waifux-wallpaper-prefs.json")
@@ -825,12 +825,12 @@ final class WallpaperXPCHandler: NSObject, WallpaperExtensionXPCProtocol {
     }
 
     /// 持久化/命令里的绝对路径可能来自旧机器或旧用户（例如
-    /// /Users/<other>/Library/Group Containers/group.com.waifux.app/...）。
+    /// /Users/<other>/Library/Group Containers/group.com.mivori.app/...）。
     /// 只有落在当前 App Group 容器内、且实际可读的路径才可用；其余交给
     /// 调用方按 sourceID 在容器里重建，避免整屏回退成系统桌面图。
     static func containerOwnedImageURL(_ url: URL) -> URL? {
         guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.waifux.app"
+            forSecurityApplicationGroupIdentifier: "group.com.mivori.app"
         ) else { return nil }
         let root = container.resolvingSymlinksInPath().standardizedFileURL.path + "/"
         let candidate = url.resolvingSymlinksInPath().standardizedFileURL
@@ -869,7 +869,7 @@ final class WallpaperXPCHandler: NSObject, WallpaperExtensionXPCProtocol {
         case .success(let decoded): return StaticImageLoad(decoded: decoded, failure: nil)
         case .failure(let failure):
             let message = "display=\(displayID) source=\(imageURL.lastPathComponent) \(failure.localizedDescription)"
-            if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app") {
+            if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") {
                 let directory = container.appendingPathComponent("WallpaperCache/thumbnails")
                 let prefix = "display-\(displayID)"
                 let files = (try? FileManager.default.contentsOfDirectory(at: directory,
@@ -943,7 +943,7 @@ final class WallpaperXPCHandler: NSObject, WallpaperExtensionXPCProtocol {
     }
 
     private static func isPrecomposedImage(_ imageURL: URL, displayID: UInt32) -> Bool {
-        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app") else { return false }
+        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") else { return false }
         let url = container.appendingPathComponent("waifux-wallpaper-prefs.json")
         guard let values = try? url.resourceValues(forKeys: [.fileSizeKey]),
               let size = values.fileSize, size > 0, size <= 131_072,
@@ -1299,7 +1299,7 @@ final class WallpaperXPCHandler: NSObject, WallpaperExtensionXPCProtocol {
 
     /// 检查显示器实例 JSON 文件是否存在于共享容器中。
     private static func displayInstancesFileExists() -> Bool {
-        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.waifux.app") else {
+        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") else {
             return false
         }
         let url = container.appendingPathComponent("waifux-display-instances.json")

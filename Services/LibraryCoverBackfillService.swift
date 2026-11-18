@@ -13,7 +13,7 @@ import Foundation
 /// - 串行、逐条限速；每轮有「条数 + 时长」双上限，到点停轮，下次进库继续
 /// - 滚动中暂停（`LibraryScrollHoverGate`）；低电量 / 可回收内存不足时停轮
 /// - 页面离开即取消；已确认条目不再重复排队，且该集合跨进程落盘
-///   （`~/Library/Caches/WaifuX/CoverBackfillCompleted.json`），重启 App 不再全量重跑
+///   （`~/Library/Caches/Mivori/CoverBackfillCompleted.json`），重启 App 不再全量重跑
 /// - 不发起任何网络请求，只处理本机已有文件与烘焙产物
 @MainActor
 final class LibraryCoverBackfillService {
@@ -263,11 +263,11 @@ final class LibraryCoverBackfillService {
 
     // MARK: - 已确认集合落盘
 
-    /// 状态文件与 `LocalImageThumbnails` 同在 `~/Library/Caches/WaifuX`：
+    /// 状态文件与 `LocalImageThumbnails` 同在 `~/Library/Caches/Mivori`：
     /// 用户清掉该缓存目录时状态一并消失，下次自然重新预热（重跑一轮命中短路，代价小）。
     private static var stateFileURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("WaifuX/CoverBackfillCompleted.json")
+            .appendingPathComponent("Mivori/CoverBackfillCompleted.json")
     }
 
     private func ensurePersistedKeysLoaded() {

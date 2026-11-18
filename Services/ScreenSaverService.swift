@@ -8,7 +8,7 @@ import Foundation
 ///
 /// 结构对齐 MirageWallpaper 的 `ScreenSaverManager`：
 /// - 组件以本地化文件名安装在 `~/Library/Screen Savers`（系统只从该目录加载用户屏保）；
-/// - 配置写在 `~/Library/Application Support/WaifuX/screensaver.json`，屏保自己读，主程序不必常驻；
+/// - 配置写在 `~/Library/Application Support/Mivori/screensaver.json`，屏保自己读，主程序不必常驻；
 /// - 替换组件前后终止系统屏保宿主进程，否则旧二进制会一直留在内存里。
 ///
 /// 与 Mirage 的差异：Scene / Web 壁纸不做屏保内实时渲染，统一走已有离线烘焙产物，
@@ -23,7 +23,7 @@ final class ScreenSaverService: ObservableObject {
     /// 构建产物和内部可执行文件沿用稳定名称；系统列表可见的安装文件名按语言选择。
     static let saverBundleName = "WaifuXScreenSaver.saver"
     static let saverExecutableName = "WaifuXScreenSaver"
-    static let saverBundleIdentifier = "com.waifux.app.screensaver"
+    static let saverBundleIdentifier = "com.mivori.app.screensaver"
     private static let installedBundleNames = [
         "WaifuX屏保服务.saver",
         "WaifuX Screen Saver Service.saver",
@@ -36,7 +36,7 @@ final class ScreenSaverService: ObservableObject {
         return installedBundleNames[1]
     }
     /// 配置写入后广播，让正在运行的屏保热重载。
-    static let configurationChangedNotification = Notification.Name("com.waifux.app.screensaver.configurationChanged")
+    static let configurationChangedNotification = Notification.Name("com.mivori.app.screensaver.configurationChanged")
 
     enum ScreenSaverError: LocalizedError {
         case bundledComponentMissing
@@ -318,7 +318,7 @@ final class ScreenSaverService: ObservableObject {
 
     var configurationURL: URL {
         fm.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Application Support/WaifuX", isDirectory: true)
+            .appendingPathComponent("Library/Application Support/Mivori", isDirectory: true)
             .appendingPathComponent("screensaver.json")
     }
 

@@ -321,7 +321,7 @@ final class DirectoryMigrationService {
 
         let defaultRoot = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first!
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
         let currentRoot = DownloadPathManager.shared.rootFolderURL
 
         let oldPath = defaultRoot.path
@@ -399,7 +399,7 @@ final class DirectoryMigrationService {
         // 收集所有可能的根目录
         let currentRoot = DownloadPathManager.shared.rootFolderURL.path
         let defaultRoot = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first!.appendingPathComponent("WaifuX").path
+            .first!.appendingPathComponent("Mivori").path
         let candidateRoots = Array(Set([currentRoot, defaultRoot])).filter { !$0.isEmpty }
 
         // ── 修复 MediaLibraryService ──

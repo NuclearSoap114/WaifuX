@@ -586,7 +586,7 @@ final class WebWallpaperDesignService {
     private nonisolated static func designDirectoryOnDisk(for wallpaperPath: String) throws -> URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
         let baseURL = (appSupport ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support"))
-            .appendingPathComponent("WaifuX")
+            .appendingPathComponent("Mivori")
             .appendingPathComponent("Designs")
             .appendingPathComponent(Self.wallpaperHash(for: wallpaperPath), isDirectory: true)
         try FileManager.default.createDirectory(at: baseURL, withIntermediateDirectories: true)

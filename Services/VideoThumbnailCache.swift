@@ -176,7 +176,7 @@ struct LibraryThumbnailResolution: Sendable {
 /// 索引只读文件名/日期，图片解码只针对被请求的那一项，而不是把整个 Covers 都打开一遍。
 final class LibraryThumbnailDiskReader: @unchecked Sendable {
     static let shared = LibraryThumbnailDiskReader()
-    private let queue = DispatchQueue(label: "com.waifux.library-thumbnail-lookup", qos: .utility)
+    private let queue = DispatchQueue(label: "com.mivori.library-thumbnail-lookup", qos: .utility)
     private struct Poster {
         let url: URL
         let date: Date
@@ -508,7 +508,7 @@ final class VideoThumbnailCache {
         if BackgroundRuntimeRole.isIsolatedTest,
            let path = ProcessInfo.processInfo.environment["WAIFUX_HELPER_TEST_ROOT"] {
             let root = URL(fileURLWithPath: path, isDirectory: true)
-            return LibraryThumbnailLookupContext(root: root.appendingPathComponent("WaifuX", isDirectory: true),
+            return LibraryThumbnailLookupContext(root: root.appendingPathComponent("Mivori", isDirectory: true),
                 videoCache: root.appendingPathComponent("VideoThumbnails", isDirectory: true),
                 imageCache: root.appendingPathComponent("LocalImageThumbnails", isDirectory: true))
         }
@@ -517,14 +517,14 @@ final class VideoThumbnailCache {
             root = snapshot
         } else if let path = WaifuXPreferences.shared.string(forKey: DownloadPathManager.customDownloadRootPathKey),
            !path.isEmpty {
-            root = URL(fileURLWithPath: path, isDirectory: true).appendingPathComponent("WaifuX", isDirectory: true)
+            root = URL(fileURLWithPath: path, isDirectory: true).appendingPathComponent("Mivori", isDirectory: true)
         } else {
             root = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("WaifuX", isDirectory: true)
+                .appendingPathComponent("Mivori", isDirectory: true)
         }
         return LibraryThumbnailLookupContext(root: root,
-            videoCache: caches.appendingPathComponent("WaifuX/VideoThumbnails", isDirectory: true),
-            imageCache: caches.appendingPathComponent("WaifuX/LocalImageThumbnails", isDirectory: true))
+            videoCache: caches.appendingPathComponent("Mivori/VideoThumbnails", isDirectory: true),
+            imageCache: caches.appendingPathComponent("Mivori/LocalImageThumbnails", isDirectory: true))
     }
 
     private let fileManager = FileManager.default
@@ -537,7 +537,7 @@ final class VideoThumbnailCache {
         if BackgroundRuntimeRole.isIsolatedTest, let root = ProcessInfo.processInfo.environment["WAIFUX_HELPER_TEST_ROOT"] {
             cacheDirectory = URL(fileURLWithPath: root).appendingPathComponent("VideoThumbnails", isDirectory: true)
         } else {
-            cacheDirectory = caches[0].appendingPathComponent("WaifuX/VideoThumbnails", isDirectory: true)
+            cacheDirectory = caches[0].appendingPathComponent("Mivori/VideoThumbnails", isDirectory: true)
         }
         try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
 

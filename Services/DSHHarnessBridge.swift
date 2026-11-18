@@ -16,7 +16,7 @@ import UniformTypeIdentifiers
 ///
 /// 桌面版启动参数里固定 `--port 19387`（`dsh-desktop-host` 里的
 /// `args: ["--no-open", "--port", "19387"]`），所以端口默认取 19387；
-/// 需要改端口时 `defaults write com.waifux.app dsh_harness_port <port>`。
+/// 需要改端口时 `defaults write com.mivori.app dsh_harness_port <port>`。
 ///
 /// 媒体只能是**绝对路径的普通文件**、且扩展名落在 DSH 侧白名单里
 /// （图片 jpg/jpeg/png/webp/gif/avif/bmp；视频 mp4/m4v/webm/ogv/ogg/mov）。

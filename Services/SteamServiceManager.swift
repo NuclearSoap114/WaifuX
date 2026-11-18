@@ -8,9 +8,22 @@ enum SteamServiceLoginState: Equatable, Codable {
     case loggingIn
     case waitingForQR(challengeURL: String)
     case waitingForMobileConfirmation
-    case waitingForCode
+    case waitingForCode(SteamGuardPrompt)
     case success
     case failed(String)
+}
+
+struct SteamGuardPrompt: Equatable, Codable, Sendable {
+    var id = UUID()
+    let isEmail: Bool
+    let previousCodeRejected: Bool
+
+    var title: String {
+        if previousCodeRejected {
+            return isEmail ? t("邮件验证码有误，请重试。") : t("Steam 手机验证码有误，请重试。")
+        }
+        return isEmail ? t("输入 Steam 发到邮箱的验证码") : t("输入 Steam 手机应用中的 Steam Guard 验证码")
+    }
 }
 
 /// 一条订阅记录（来自 SteamKit2 CPublishedFile_GetUserFiles，type=mysubscriptions）。
@@ -81,8 +94,8 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
     @Published private(set) var steamID = ""
     @Published private(set) var loginState: SteamServiceLoginState = .idle
 
-    private let ioQueue = DispatchQueue(label: "com.waifux.app.steam-service", qos: .userInitiated)
-    private let keychainService = "com.waifux.app.SteamService"
+    private let ioQueue = DispatchQueue(label: "com.mivori.app.steam-service", qos: .userInitiated)
+    private let keychainService = "com.mivori.app.SteamService"
     private let usernameKey = "steam_service_username"
     private let loginIDKey = "steam_service_login_id"
     private var process: Process?
@@ -207,15 +220,17 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
         serviceLaunchConfiguration() != nil
     }
 
-    func login(username: String, password: String, guardCode: String? = nil) async throws {
+    func login(username: String, password: String, guardCode: String? = nil, preferGuardCode: Bool = false) async throws {
+        let username = username.trimmingCharacters(in: .whitespacesAndNewlines)
         if BackgroundRuntimeRole.isRemoteUI {
-            let arguments = try BackgroundPropertyList.encode(["username": username, "password": password].merging(guardCode.map { ["code": $0] } ?? [:]) { _, new in new })
+            var fields: [String: Any] = ["username": username, "password": password, "preferGuardCode": preferGuardCode]
+            fields["code"] = guardCode
+            let arguments = try BackgroundPropertyList.encode(fields)
             try await BackgroundRuntimeBridge.requestVoid("steam.login.wait", arguments: arguments)
             return
         }
 
-        guard !username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              !password.isEmpty else {
+        guard !username.isEmpty, !password.isEmpty else {
             throw SteamServiceError.authenticationFailed(LocalizationService.shared.t("Steam 用户名和密码不能为空。"), "MISSING_CREDENTIALS")
         }
 
@@ -231,7 +246,7 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
                 }
                 guard self.ensureStartedOnQueue() else {
                     continuation.resume(throwing: SteamServiceError.unavailable(
-                        LocalizationService.shared.t("WaifuX Steam 服务不可用，请重新构建应用。")
+                        LocalizationService.shared.t("Mivori Steam 服务不可用，请重新构建应用。")
                     ))
                     return
                 }
@@ -245,7 +260,8 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
                 var fields: [String: Any] = [
                     "username": username,
                     "password": password,
-                    "loginId": self.loginID
+                    "loginId": self.loginID,
+                    "preferGuardCode": preferGuardCode
                 ]
                 if case .value(let guardData) = self.keychainRead(
                     account: self.guardDataAccount(username)
@@ -280,7 +296,7 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
             guard loginContinuation == nil else { return }
             guard ensureStartedOnQueue() else {
                 updateOnMain {
-                    self.loginState = .failed(LocalizationService.shared.t("WaifuX Steam 服务不可用，请重新构建应用。"))
+                    self.loginState = .failed(LocalizationService.shared.t("Mivori Steam 服务不可用，请重新构建应用。"))
                 }
                 return
             }
@@ -338,10 +354,12 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
     }
 
     func submitGuardCode(_ code: String) {
+        let code = code.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !code.isEmpty else { return }
         if BackgroundRuntimeRole.isRemoteUI { Task { @MainActor in BackgroundRuntimeBridge.send("steam.submitGuardCode", ["code": code]) }; return }
 
         ioQueue.async { [weak self] in
-            guard let self, !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            guard let self else { return }
             sendCommandOnQueue("submitChallenge", fields: ["code": code])
         }
     }
@@ -415,7 +433,7 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
                     }
                     guard self.ensureStartedOnQueue() else {
                         continuation.resume(throwing: SteamServiceError.unavailable(
-                            LocalizationService.shared.t("WaifuX Steam 服务不可用，请重新构建应用。")
+                            LocalizationService.shared.t("Mivori Steam 服务不可用，请重新构建应用。")
                         ))
                         return
                     }
@@ -970,8 +988,10 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
                 self.loginState = .waitingForMobileConfirmation
             }
         case "mobileCode", "emailCode":
+            let rejected = (event["previousCodeRejected"] as? Bool) == true
+            let prompt = SteamGuardPrompt(isEmail: state == "emailCode", previousCodeRejected: rejected)
             updateOnMain {
-                self.loginState = .waitingForCode
+                self.loginState = .waitingForCode(prompt)
             }
         case "qr":
             if let challenge = event["challengeUrl"] as? String, !challenge.isEmpty {
@@ -1202,7 +1222,11 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
             guard number(enabledKey) == 1,
                   let host = string(hostKey),
                   let port = number(portKey), port > 0 else { return nil }
-            return URL(string: "\(scheme)://\(host):\(port)")
+            var components = URLComponents()
+            components.scheme = scheme
+            components.host = host
+            components.port = port
+            return components.url
         }
         settings.httpProxy = proxyURL(scheme: "http", hostKey: "HTTPProxy", portKey: "HTTPPort", enabledKey: "HTTPEnable")
         settings.httpsProxy = proxyURL(scheme: "http", hostKey: "HTTPSProxy", portKey: "HTTPSPort", enabledKey: "HTTPSEnable")
@@ -1234,6 +1258,9 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
             overrides["all_proxy"] = url.absoluteString
             overrides["ALL_PROXY"] = url.absoluteString
         }
+        if proxy.httpsProxy != nil || proxy.socksProxy != nil {
+            overrides["MIVORI_STEAM_PROXY_TRANSPORT"] = "websocket"
+        }
         let noProxy = (["localhost", "127.0.0.1", "::1"] + proxy.exceptions).joined(separator: ",")
         overrides["no_proxy"] = noProxy
         overrides["NO_PROXY"] = noProxy
@@ -1252,7 +1279,7 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
     }
 
     private func serviceLaunchConfiguration() -> LaunchConfiguration? {
-        if let configured = ProcessInfo.processInfo.environment["WAIFUX_STEAM_SERVICE_PATH"],
+        if let configured = ProcessInfo.processInfo.environment["MIVORI_STEAM_SERVICE_PATH"],
            !configured.isEmpty {
             let url = URL(fileURLWithPath: configured)
             if FileManager.default.isExecutableFile(atPath: url.path) {

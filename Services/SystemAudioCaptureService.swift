@@ -70,7 +70,7 @@ public final class SystemAudioCaptureService: NSObject, ObservableObject {
     nonisolated(unsafe) fileprivate static let tapRetryBaseDelayNs: UInt64 = 500_000_000
     nonisolated(unsafe) fileprivate static let tapStartMaxAttempts = 3
 
-    nonisolated(unsafe) private static let deviceListenerQueue = DispatchQueue(label: "com.waifux.audio-devicelistener")
+    nonisolated(unsafe) private static let deviceListenerQueue = DispatchQueue(label: "com.mivori.audio-devicelistener")
 
     /// 会话代号：每次 start/重建递增，旧的启动重试循环发现代号过期自动退出
     private var tapGeneration: UInt64 = 0
@@ -100,7 +100,7 @@ public final class SystemAudioCaptureService: NSObject, ObservableObject {
     private var lastSpectrum64: [Float] = .init(repeating: 0, count: 64)
 
     /// FFT 处理队列
-    nonisolated(unsafe) fileprivate static let fftQueue = DispatchQueue(label: "com.waifux.audio-fft", qos: .userInitiated)
+    nonisolated(unsafe) fileprivate static let fftQueue = DispatchQueue(label: "com.mivori.audio-fft", qos: .userInitiated)
 
     /// 权限是否已获取
     @Published public private(set) var isAuthorized = false
@@ -262,7 +262,7 @@ public final class SystemAudioCaptureService: NSObject, ObservableObject {
         // 2) 创建 Tap-only Aggregate Device（无 master，TapAutoStart=true）
         let aggregateDescription: [String: Any] = [
             kAudioAggregateDeviceNameKey as String: "WaifuX System Audio Tap Device",
-            kAudioAggregateDeviceUIDKey as String: "com.waifux.systemaudio.\(tapUUID.uuidString)",
+            kAudioAggregateDeviceUIDKey as String: "com.mivori.systemaudio.\(tapUUID.uuidString)",
             kAudioAggregateDeviceIsPrivateKey as String: true,
             kAudioAggregateDeviceTapListKey as String: [
                 [

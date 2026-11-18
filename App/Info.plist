@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>WaifuX</string>
+	<string>Mivori</string>
 	<key>CFBundleDisplayName</key>
-	<string>WaifuX</string>
+	<string>Mivori</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleVersion</key>
@@ -24,9 +24,11 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.waifux.app.ui</string>
+			<string>com.mivori.app.ui</string>
 			<key>CFBundleURLSchemes</key>
-			<array><string>waifux</string></array>
+			<array>
+				<string>mivori</string>
+			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 		</dict>
@@ -35,8 +37,6 @@
 	<true/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
-	<key>CFBundleIconName</key>
-	<string>AppIcon</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2024 WaifuX. All rights reserved.</string>
 	<key>CFBundleLocalizations</key>
@@ -51,23 +51,19 @@
 	<key>LSUIElement</key>
 	<false/>
 	<key>NSScreenCaptureDescription</key>
-	<string>WaifuX 需要屏幕录制与系统音频捕获权限，用于动态壁纸显示、音频可视化和视频烘焙导出。</string>
+	<string>Mivori 需要屏幕录制与系统音频捕获权限，用于动态壁纸显示、音频可视化和视频烘焙导出。</string>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>WaifuX 需要读取「正在播放」信息，以便 Web 音频可视化壁纸显示歌名、艺人与封面。</string>
+	<string>Mivori 需要读取「正在播放」信息，以便 Web 音频可视化壁纸显示歌名、艺人与封面。</string>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>WaifuX 在系统媒体接口不可用时，通过 Apple Events 读取 Music 的正在播放信息，供壁纸 Media Integration 使用。</string>
-	<key>SUFeedURL</key>
-	<string>https://jipika.github.io/WaifuX/appcast.xml</string>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
-	<key>SUScheduledCheckInterval</key>
-	<integer>86400</integer>
+	<string>Mivori 在系统媒体接口不可用时，通过 Apple Events 读取 Music 的正在播放信息，供壁纸 Media Integration 使用。</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSAudioCaptureUsageDescription</key>
-	<string>WaifuX 需要捕获系统输出音频，为动态壁纸与桌面挂件提供实时音频可视化。</string>
+	<string>Mivori 需要捕获系统输出音频，为动态壁纸与桌面挂件提供实时音频可视化。</string>
+	<key>CFBundleIconFile</key>
+	<string>Mivori.icns</string>
 </dict>
 </plist>

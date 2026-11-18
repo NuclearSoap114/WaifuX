@@ -1796,19 +1796,18 @@ private struct AboutSettingsTab: View {
     var body: some View {
         ZStack {
             MacSettingsForm {
-                // 自动更新区域
-                autoUpdateSection
+                versionSection
 
                 // 项目信息组
                 MacSettingsSection(header: t("projectInfo")) {
-                    infoRow(title: t("developer"), value: "jipika", isLast: false)
+                    infoRow(title: "上游项目", value: "WaifuX · jipika · GPL-3.0", isLast: false)
                     infoRow(title: t("animeRuleSource"), value: "KazumiRules", isLast: false)
                     infoRow(title: t("techStack"), value: "SwiftUI + AppKit", isLast: true)
                 }
 
                 // 链接组
                 MacSettingsSection(header: t("links")) {
-                    MacLinkRow(title: t("visitWebsite"), action: {
+                    MacLinkRow(title: "WaifuX 项目主页", action: {
                         if let url = URL(string: "https://jipika.github.io/WaifuX") {
                             NSWorkspace.shared.open(url)
                         }
@@ -1816,7 +1815,7 @@ private struct AboutSettingsTab: View {
 
                     Divider().background(Color.white.opacity(0.06)).padding(.leading, 16)
 
-                    MacLinkRow(title: t("reportProblem"), action: {
+                    MacLinkRow(title: "WaifuX 问题跟踪", action: {
                         if let url = URL(string: "https://github.com/jipika/WaifuX/issues") {
                             NSWorkspace.shared.open(url)
                         }
@@ -1926,10 +1925,8 @@ private struct AboutSettingsTab: View {
         }
     }
 
-    // MARK: - 自动更新区域（Sparkle 驱动）
-
     @ViewBuilder
-    private var autoUpdateSection: some View {
+    private var versionSection: some View {
         MacSettingsSection {
             VStack(alignment: .leading, spacing: 16) {
                 // 应用信息头部 + 检查更新按钮
@@ -1941,7 +1938,7 @@ private struct AboutSettingsTab: View {
                         .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("WaifuX")
+                        Text("Mivori")
                             .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(Color.white.opacity(0.92))
 
@@ -1952,19 +1949,9 @@ private struct AboutSettingsTab: View {
 
                     Spacer()
 
-                    // 检查更新按钮（委托 Sparkle 处理）
-                    Button {
-                        AppDelegate.shared?.checkForUpdates()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 12))
-                            Text(t("checkForUpdates"))
-                                .font(.system(size: 13))
-                        }
-                        .frame(height: 28)
-                    }
-                    .buttonStyle(.bordered)
+                    Text("通过 Mivori 安装包更新")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
                 }
 
                 Divider()
@@ -1974,7 +1961,7 @@ private struct AboutSettingsTab: View {
                         .foregroundStyle(.secondary)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(t("渲染组件")).font(.system(size: 13, weight: .medium))
-                        Text(t("Scene、Web 与视频引擎可独立更新"))
+                        Text(t("检查 Scene 渲染组件更新"))
                             .font(.system(size: 11.5)).foregroundStyle(.secondary)
                     }
                     Spacer()

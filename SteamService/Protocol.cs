@@ -22,6 +22,7 @@ internal sealed class ServiceCommand
     public string? RefreshToken { get; set; }
     public string? GuardData { get; set; }
     public string? GuardCode { get; set; }
+    public bool PreferGuardCode { get; set; }
     public string? Code { get; set; }
     public string? OutputRoot { get; set; }
     public List<string>? WorkshopIds { get; set; }
@@ -56,9 +57,9 @@ internal sealed class ProtocolWriter
         Send(new { type = "response", requestId, success, message, errorCode, data });
     }
 
-    public void AuthState(string state, string? accountName = null, string? message = null, string? challengeUrl = null, string? refreshToken = null, string? guardData = null, string? errorCode = null, string? steamId = null)
+    public void AuthState(string state, string? accountName = null, string? message = null, string? challengeUrl = null, string? refreshToken = null, string? guardData = null, string? errorCode = null, string? steamId = null, bool? previousCodeRejected = null)
     {
-        Send(new { type = "authState", state, accountName, message, challengeUrl, refreshToken, guardData, errorCode, steamId });
+        Send(new { type = "authState", state, accountName, message, challengeUrl, refreshToken, guardData, errorCode, steamId, previousCodeRejected });
     }
 
     public void DownloadState(string taskId, string state, long receivedBytes = 0, long totalBytes = 0, double bytesPerSecond = 0, double? etaSeconds = null, string? outputPath = null, string? message = null, string? errorCode = null)

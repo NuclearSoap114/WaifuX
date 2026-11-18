@@ -430,7 +430,7 @@ enum SceneWallpaperPropertiesService {
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: ":", with: "_")
         let baseDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("com.waifux.WaifuX", isDirectory: true)
+            .appendingPathComponent("com.mivori.WaifuX", isDirectory: true)
             .appendingPathComponent(folderName, isDirectory: true)
         return baseDir.appendingPathComponent("\(safeName).json")
     }

@@ -399,7 +399,7 @@ class DownloadTaskService: ObservableObject {
     // MARK: - Persistence
 
     /// 后台持久化队列，避免 JSON 编码 + UserDefaults 写入阻塞主线程
-    private static let persistQueue = DispatchQueue(label: "com.waifux.downloadTask.persist", qos: .utility)
+    private static let persistQueue = DispatchQueue(label: "com.mivori.downloadTask.persist", qos: .utility)
 
     private func persistTasks() {
         saveTask?.cancel()
@@ -1286,7 +1286,7 @@ final class PersistentDownloadQueueService {
         return FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first!
-            .appendingPathComponent("com.waifux.app", isDirectory: true)
+            .appendingPathComponent("com.mivori.app", isDirectory: true)
             .appendingPathComponent("DownloadQueue", isDirectory: true)
             .appendingPathComponent("download-queue-v2.json", isDirectory: false)
     }

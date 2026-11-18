@@ -2,19 +2,19 @@ import Foundation
 import MachO
 
 enum BackgroundAgentWire {
-    static let bundleIdentifier = "com.waifux.app.helper"
-    static let machServiceName = "com.waifux.app.helper.control"
+    static let bundleIdentifier = "com.mivori.app.helper"
+    static let machServiceName = "com.mivori.app.helper.control"
     static let protocolVersion = 2
-    static let plistName = "com.waifux.app.helper.plist"
+    static let plistName = "com.mivori.app.helper.plist"
     /// 备用注册：与 `plistName` 内容相同、只换 launchd Label。
     ///
     /// 用户机实测（2026-11-05，153→154）：BTM 里 Helper 子记录指向 WaifuX 父记录，
     /// 父记录却没列出它，launchd 每次 `copy_bundle_path` 失败、exit 78。对同一 Label
     /// 注销/注册只会更新那条坏记录（UUID 不变），换一个 Label 才会让 BTM 新建子记录
     /// 并挂到父记录下。只在用户点「修复后台服务」后启用，见 `BackgroundAgentRegistrationMode`。
-    static let relinkedPlistName = "com.waifux.app.helper.relinked.plist"
-    static let relinkedLabel = "com.waifux.app.helper.relinked"
-    static let preferencesSuite = "group.com.waifux.app"
+    static let relinkedPlistName = "com.mivori.app.helper.relinked.plist"
+    static let relinkedLabel = "com.mivori.app.helper.relinked"
+    static let preferencesSuite = "group.com.mivori.app"
     static let migrationKey = "background_preferences_migrated_v1"
     static let maximumCommandBytes = 16 * 1024 * 1024
 
@@ -22,7 +22,7 @@ enum BackgroundAgentWire {
     /// 按它找残留 Helper，诊断导出也用它标出持锁进程。
     static var productionLockFileURL: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("background-helper.lock")
     }
 }
@@ -185,6 +185,6 @@ enum BackgroundPropertyList {
 }
 
 extension Notification.Name {
-    static let backgroundDownloadWorkersChanged = Notification.Name("com.waifux.helper.downloadWorkersChanged")
-    static let backgroundAgentSnapshotChanged = Notification.Name("com.waifux.helper.snapshot")
+    static let backgroundDownloadWorkersChanged = Notification.Name("com.mivori.helper.downloadWorkersChanged")
+    static let backgroundAgentSnapshotChanged = Notification.Name("com.mivori.helper.snapshot")
 }

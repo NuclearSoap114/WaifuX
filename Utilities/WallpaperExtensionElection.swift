@@ -2,7 +2,7 @@
 //
 //  `pluginkit -m -v -i <id>` 输出每行一条登记记录，行首 `+` 表示该副本
 //  当前被系统选中（elected），后跟 bundleID(version)、UUID、日期、路径：
-//      +    com.waifux.app.wallpaperextension((null))	<UUID>	2026-09-17 ... /Applications/WaifuX.app/Contents/PlugIns/X.appex
+//      +    com.mivori.app.wallpaperextension((null))	<UUID>	2026-09-17 ... /Applications/Mivori.app/Contents/PlugIns/X.appex
 //
 //  路径是行内唯一以 "/" 开头的 token（bundleID/UUID/日期都不含斜杠），
 //  因此从第一个 "/" 取到行尾即可，天然兼容含空格的安装路径。

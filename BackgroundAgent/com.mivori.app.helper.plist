@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key><string>com.waifux.app.helper</string>
+    <key>Label</key><string>com.mivori.app.helper</string>
     <key>BundleProgram</key><string>Contents/Helpers/WaifuXHelper.app/Contents/MacOS/WaifuXHelper</string>
     <key>MachServices</key>
-    <dict><key>com.waifux.app.helper.control</key><true/></dict>
+    <dict><key>com.mivori.app.helper.control</key><true/></dict>
     <key>RunAtLoad</key><true/>
     <!-- 渲染器由本 Helper spawn，子进程初始 QoS class（qos_class_main）继承
          Helper 的调度上下文。launchd 默认给 daemon 类作业 utility 档，导致

@@ -312,5 +312,5 @@ final class ExternalDisplayConnectionCoordinator: NSObject {
 }
 
 extension Notification.Name {
-    static let openSchedulerSettings = Notification.Name("com.waifux.openSchedulerSettings")
+    static let openSchedulerSettings = Notification.Name("com.mivori.openSchedulerSettings")
 }

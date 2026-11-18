@@ -14,7 +14,7 @@ import AppKit
 @MainActor
 final class DesktopWallpaperSyncManager {
     static let shared = DesktopWallpaperSyncManager()
-    static let registrationDidChangeNotification = Notification.Name("com.waifux.desktopRegistrationDidChange")
+    static let registrationDidChangeNotification = Notification.Name("com.mivori.desktopRegistrationDidChange")
 
     /// 每个屏幕最后通过 WaifuX 设置的静态壁纸 URL（key 为 screenID）
     private var lastSetImageURLByScreen: [String: URL] = [:]
@@ -527,7 +527,7 @@ final class DesktopWallpaperSyncManager {
     /// 清掉持久化注册，避免切换 Space 或唤醒时把历史截图重新写回桌面/锁屏。
     private func purgeLegacyRendererCaptureState() {
         let legacyDirectory = URL(fileURLWithPath: NSHomeDirectory())
-            .appendingPathComponent("Library/Caches/com.waifux.wallpaperengine/captured-frames", isDirectory: true)
+            .appendingPathComponent("Library/Caches/com.mivori.wallpaperengine/captured-frames", isDirectory: true)
             .standardizedFileURL
         let legacyPrefix = legacyDirectory.path.hasSuffix("/")
             ? legacyDirectory.path

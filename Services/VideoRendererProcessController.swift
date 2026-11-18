@@ -228,7 +228,7 @@ final class VideoRendererProcessController {
     /// All IPC writes share one queue so fire-and-forget maintenance commands
     /// cannot overtake a subsequent `set` or `stop` request.
     private let ipcCommandQueue = DispatchQueue(
-        label: "com.waifux.video-renderer.ipc-client",
+        label: "com.mivori.video-renderer.ipc-client",
         qos: .userInitiated
     )
     /// Crop 更新可能在拖动和显示器布局变更时密集产生。只保留每屏最新值，

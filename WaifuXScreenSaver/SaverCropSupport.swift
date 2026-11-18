@@ -322,7 +322,7 @@ enum SaverCropLayers {
 /// 屏保进程没有沙盒，`containerURL(forSecurityApplicationGroupIdentifier:)` 拿不到容器，
 /// 因此直接按 Group Containers 路径读取；文件不存在时返回 nil，由调用方回退到配置快照。
 enum SaverSharedCropPrefs {
-    private static let appGroupID = "group.com.waifux.app"
+    private static let appGroupID = "group.com.mivori.app"
     private static let jsonName = "waifux-crop-prefs.json"
 
     static func settings(forDisplayKey key: String) -> SaverCropSettings? {

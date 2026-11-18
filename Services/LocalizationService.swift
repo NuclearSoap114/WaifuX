@@ -118,7 +118,8 @@ class LocalizationService: ObservableObject {
 
     // 本地化字符串
     func t(_ key: String) -> String {
-        translations[currentLanguage]?[key] ?? translations[.english]?[key] ?? key
+        let translated = translations[currentLanguage]?[key] ?? translations[.english]?[key] ?? key
+        return translated.replacingOccurrences(of: "WaifuX", with: "Mivori")
     }
 }
 

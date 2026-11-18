@@ -21,9 +21,9 @@ final class WaifuXPreferences: UserDefaults, @unchecked Sendable {
         let suite = ProcessInfo.processInfo.environment["WAIFUX_HELPER_TEST_SUITE"]
             ?? BackgroundAgentWire.preferencesSuite
         preferencesSuite = suite
-        // 隔离回归不可把测试值写进真实的 com.waifux.app。生产 Helper 即使
+        // 隔离回归不可把测试值写进真实的 com.mivori.app。生产 Helper 即使
         // 尚未收到主程序的偏好迁移，也必须能读到旧域中的 Steam 会话标识。
-        legacySuiteName = BackgroundRuntimeRole.isIsolatedTest ? suite + ".legacy" : "com.waifux.app"
+        legacySuiteName = BackgroundRuntimeRole.isIsolatedTest ? suite + ".legacy" : "com.mivori.app"
         super.init(suiteName: suite)!
     }
 
@@ -39,7 +39,7 @@ final class WaifuXPreferences: UserDefaults, @unchecked Sendable {
         mutationHandler = nil
         super.removePersistentDomain(forName: preferencesSuite)
         if !BackgroundRuntimeRole.isIsolatedTest {
-            UserDefaults.standard.removePersistentDomain(forName: "com.waifux.app")
+            UserDefaults.standard.removePersistentDomain(forName: "com.mivori.app")
             UserDefaults.standard.synchronize()
         }
         super.synchronize()

@@ -36,7 +36,7 @@ final class ModuleAvailability {
     /// 判断某个 MainTab 是否在当前会话启用。home/myMedia 永远启用。
     func isTabEnabled(_ tab: MainTab) -> Bool {
         switch tab {
-        case .home, .myMedia: return true
+        case .home, .myMedia, .fileOrganizer, .desktopPet: return true
         case .wallpaperExplore: return wallpaperEnabled
         case .mediaExplore: return mediaEnabled
         case .animeExplore: return animeEnabled

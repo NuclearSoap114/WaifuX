@@ -1,13 +1,13 @@
-name: WaifuX
+name: Mivori
 options:
-  bundleIdPrefix: com.waifux
+  bundleIdPrefix: com.mivori
   deploymentTarget:
     macOS: "14.4"
   xcodeVersion: "26.4"
 
 # 共享 Scheme 纳入仓库，避免仅存在 xcuserdata 时换机/重装后 Cmd+R 无可用方案
 schemes:
-  WaifuX:
+  Mivori:
     build:
       targets:
         WaifuX: all
@@ -32,16 +32,13 @@ packages:
   Cache:
     url: https://github.com/hyperoslo/Cache.git
     from: "7.4.0"
-  Sparkle:
-    url: https://github.com/sparkle-project/Sparkle.git
-    from: "2.6.0"
 
 settings:
   base:
     CODE_SIGN_STYLE: Automatic
-    DEVELOPMENT_TEAM: SRHKTRJ83W
     REGISTER_APP_GROUPS: YES
     ENABLE_HARDENED_RUNTIME: YES
+    ENABLE_DEBUG_DYLIB: NO
     COMBINE_HIDPI_IMAGES: YES
 
 targets:
@@ -56,11 +53,22 @@ targets:
           - "**/*.backup"
       - path: Models
       - path: Services
+        excludes:
+          - "**/*.bak"
       - path: Utilities
       - path: Components
       - path: DesignSystem
       - path: Metal
       - path: Assets.xcassets
+      - path: Brand/Mivori.icns
+        buildPhase: resources
+      - path: Brand/NaiWaAtlas.png
+        buildPhase: resources
+      - path: Brand/NaiWaAttribution
+        type: folder
+        buildPhase: resources
+      - path: LICENSE
+        buildPhase: resources
       # 含 wallpaper-wgpu（新 Metal 渲染器）、wallpaperengine-cli（旧离线烘焙 renderer）、dxc、dylib 等；assets/ 用于构建时内嵌
       - path: Resources
         type: folder
@@ -103,31 +111,30 @@ targets:
       - path: BackgroundAgent/BackgroundAgentRegistration.swift
       - path: BackgroundAgent/BackgroundChildProcessCleanup.swift
       - path: BackgroundAgent/WaifuXPreferences.swift
-      - path: BackgroundAgent/com.waifux.app.helper.plist
+      - path: BackgroundAgent/com.mivori.app.helper.plist
         buildPhase:
           copyFiles:
             destination: wrapper
             subpath: Contents/Library/LaunchAgents
       # 备用注册（只换 Label）：BTM 默认记录损坏时「修复后台服务」改注册到它。
-      - path: BackgroundAgent/com.waifux.app.helper.relinked.plist
+      - path: BackgroundAgent/com.mivori.app.helper.relinked.plist
         buildPhase:
           copyFiles:
             destination: wrapper
             subpath: Contents/Library/LaunchAgents
     settings:
       base:
-        PRODUCT_NAME: WaifuX
-        PRODUCT_BUNDLE_IDENTIFIER: com.waifux.app
-        MARKETING_VERSION: 38.0.158
-        CURRENT_PROJECT_VERSION: 38.0.158
+        PRODUCT_NAME: Mivori
+        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app
+        MARKETING_VERSION: 1.4.2
+        CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "14.4"
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: SRHKTRJ83W
         ENABLE_HARDENED_RUNTIME: YES
         COMBINE_HIDPI_IMAGES: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
         INFOPLIST_FILE: App/Info.plist
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks
         # 内嵌 assets zip 的 .o 文件由 scripts/build-wallpaper-wgpu.sh 手动生成并提交。
         OTHER_LDFLAGS: $(inherited)
@@ -136,7 +143,6 @@ targets:
       - package: Kanna
       - package: Kingfisher
       - package: Cache
-      - package: Sparkle
       - target: WaifuXWallpaperExtension
         embed: true
       - target: WaifuXHelper
@@ -155,6 +161,10 @@ targets:
           destination: wrapper
           subpath: Contents/Resources/Screen Savers
     postBuildScripts:
+      - basedOnDependencyAnalysis: false
+        script: |
+          # Separate the Web IPC service from any installed WaifuX process.
+          "${SRCROOT}/scripts/build-mivori-web-cli.sh" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wallpaperengine-cli" arm64
       - basedOnDependencyAnalysis: false
         script: |
           FRAMEWORKS_DIR="${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Frameworks"
@@ -185,23 +195,6 @@ targets:
                     rsync -a "$SPM_BUNDLE/Contents/Resources/" "$PKG_FW/" 2>/dev/null || true
                   fi
                   rm -rf "$APP_RES/${fw_name}_${fw_name}.bundle" 2>/dev/null || true
-                fi
-
-                # 修正 Sparkle CFBundleIdentifier（SPM 生成 spakle.Sparkle → org.sparkle-project.Sparkle）
-                FW_PLIST="$framework/Versions/Current/Resources/Info.plist"
-                if [ -f "$FW_PLIST" ]; then
-                  CURRENT_ID=$(plutil -extract CFBundleIdentifier raw "$FW_PLIST" 2>/dev/null || echo "")
-                  if [ "$CURRENT_ID" != "org.sparkle-project.Sparkle" ]; then
-                    echo "Rewriting CFBundleIdentifier: $CURRENT_ID -> org.sparkle-project.Sparkle"
-                    plutil -replace CFBundleIdentifier -string "org.sparkle-project.Sparkle" "$FW_PLIST"
-                  fi
-                  PKG_PLIST="${BUILT_PRODUCTS_DIR}/PackageFrameworks/${fw_name}.framework/Versions/Current/Resources/Info.plist"
-                  if [ -f "$PKG_PLIST" ]; then
-                    PKG_ID=$(plutil -extract CFBundleIdentifier raw "$PKG_PLIST" 2>/dev/null || echo "")
-                    if [ "$PKG_ID" != "org.sparkle-project.Sparkle" ]; then
-                      plutil -replace CFBundleIdentifier -string "org.sparkle-project.Sparkle" "$PKG_PLIST"
-                    fi
-                  fi
                 fi
 
                 # 整理可执行文件、Headers、Modules 到 Versions/Current
@@ -329,40 +322,13 @@ targets:
             | while IFS= read -r -d '' file; do
                 codesign --force -s - "$file" 2>/dev/null || true
               done
-      - basedOnDependencyAnalysis: false
-        name: SignSparkleForDebug
-        script: |
-          # SPM 的 Sparkle.xcframework 发布时就是 ad-hoc 签名；增量构建时 builtin-copy 拷入
-          # adhoc 副本且 CodeSign 判 up-to-date 跳过 → dyld 报 different Team IDs 崩溃。
-          # 这里每次构建后强制用当前开发证书重签（Debug 才需要；Release 由 package.sh 统一处理）。
-          if [[ "${CONFIGURATION:-}" != "Debug" ]]; then
-            exit 0
-          fi
-          SPARKLE_FRAMEWORK="${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Frameworks/Sparkle.framework"
-          if [[ ! -d "$SPARKLE_FRAMEWORK" ]]; then
-            exit 0
-          fi
-          IDENTITY=$(security find-identity -v -p codesigning 2>/dev/null \
-            | grep "Apple Development" | head -1 | grep -oE "[A-F0-9]{40}")
-          if [[ -z "$IDENTITY" ]]; then
-            echo "warning: no Apple Development identity; skip Sparkle re-sign"
-            exit 0
-          fi
-          VB="$SPARKLE_FRAMEWORK/Versions/B"
-          codesign --force --options runtime -s "$IDENTITY" "$VB/Autoupdate" 2>/dev/null || true
-          codesign --force --options runtime -s "$IDENTITY" "$VB/XPCServices/Downloader.xpc" 2>/dev/null || true
-          codesign --force --options runtime -s "$IDENTITY" "$VB/XPCServices/Installer.xpc" 2>/dev/null || true
-          codesign --force --options runtime -s "$IDENTITY" "$VB/Updater.app" 2>/dev/null || true
-          codesign --force --options runtime -s "$IDENTITY" "$VB/Sparkle" 2>/dev/null || true
-          codesign --force --options runtime -s "$IDENTITY" "$SPARKLE_FRAMEWORK" 2>/dev/null || true
-          echo "Sparkle re-signed with $IDENTITY"
     entitlements:
       path: WaifuX.entitlements
       properties:
         com.apple.security.network.client: true
         com.apple.security.automation.apple-events: true
         com.apple.security.application-groups:
-          - group.com.waifux.app
+          - group.com.mivori.app
 
   WaifuXHelper:
     type: application
@@ -373,6 +339,8 @@ targets:
         includes:
           - "**/*.lproj/InfoPlist.strings"
       - path: Assets.xcassets
+      - path: Brand/Mivori.icns
+        buildPhase: resources
       # 设计壁纸/场景设计面板的编辑器 HTML：面板在 Helper 进程里弹（Bundle.main =
       # WaifuXHelper.app），不显式编进 Helper 资源就会落到 fallback 提示页。
       - path: Resources/WallpaperPropertyEditor.html
@@ -381,8 +349,8 @@ targets:
         excludes:
           - Info.plist
           - BackgroundAgent.entitlements
-          - com.waifux.app.helper.plist
-          - com.waifux.app.helper.relinked.plist
+          - com.mivori.app.helper.plist
+          - com.mivori.app.helper.relinked.plist
       - path: Components/DisplaySelectorSheet.swift
       - path: Components/ExploreChips.swift
       - path: Components/PerformanceModifiers.swift
@@ -557,26 +525,25 @@ targets:
     settings:
       base:
         PRODUCT_NAME: WaifuXHelper
-        PRODUCT_BUNDLE_IDENTIFIER: com.waifux.app.helper
-        MARKETING_VERSION: 38.0.158
-        CURRENT_PROJECT_VERSION: 38.0.158
+        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app.helper
+        MARKETING_VERSION: 1.4.2
+        CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) WAIFUX_HELPER
         OTHER_LDFLAGS: $(inherited) $(SRCROOT)/Resources/zip_data.o $(SRCROOT)/Resources/zip_accessor.o
         LD_RUNPATH_SEARCH_PATHS: $(inherited) @executable_path/../Frameworks @executable_path/../../../../../Frameworks
         MACOSX_DEPLOYMENT_TARGET: "14.4"
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: SRHKTRJ83W
         ENABLE_HARDENED_RUNTIME: YES
         INFOPLIST_FILE: BackgroundAgent/Info.plist
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
     entitlements:
       path: BackgroundAgent/BackgroundAgent.entitlements
       properties:
         com.apple.security.network.client: true
         com.apple.security.automation.apple-events: true
         com.apple.security.application-groups:
-          - group.com.waifux.app
+          - group.com.mivori.app
 
   WaifuXWallpaperExtension:
     type: app-extension
@@ -587,13 +554,12 @@ targets:
     settings:
       base:
         PRODUCT_NAME: WaifuXWallpaperExtension
-        PRODUCT_BUNDLE_IDENTIFIER: com.waifux.app.wallpaperextension
-        MARKETING_VERSION: 38.0.158
-        CURRENT_PROJECT_VERSION: 38.0.158
+        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app.wallpaperextension
+        MARKETING_VERSION: 1.4.2
+        CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "14.4"
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: SRHKTRJ83W
         ENABLE_HARDENED_RUNTIME: YES
         INFOPLIST_FILE: WaifuXWallpaperExtension/Info.plist
         SWIFT_OBJC_BRIDGING_HEADER: WaifuXWallpaperExtension/WallpaperExtension-Bridging-Header.h
@@ -605,10 +571,10 @@ targets:
         # including Debug and local package builds.
         com.apple.security.app-sandbox: true
         com.apple.security.application-groups:
-          - group.com.waifux.app
+          - group.com.mivori.app
 
   # 屏保组件：独立 .saver 包，由系统 legacyScreenSaver 进程加载。
-  # 只读 App 写好的 ~/Library/Application Support/WaifuX/screensaver.json，
+  # 只读 App 写好的 ~/Library/Application Support/Mivori/screensaver.json，
   # 不依赖主程序运行（结构参考 MirageWallpaper 的 MirageScreenSaver）。
   WaifuXScreenSaver:
     type: bundle
@@ -620,13 +586,12 @@ targets:
     settings:
       base:
         PRODUCT_NAME: WaifuXScreenSaver
-        PRODUCT_BUNDLE_IDENTIFIER: com.waifux.app.screensaver
-        MARKETING_VERSION: 38.0.158
-        CURRENT_PROJECT_VERSION: 38.0.158
+        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app.screensaver
+        MARKETING_VERSION: 1.4.2
+        CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
         MACOSX_DEPLOYMENT_TARGET: "14.4"
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: SRHKTRJ83W
         INFOPLIST_FILE: WaifuXScreenSaver/Info.plist
         WRAPPER_EXTENSION: saver
         SKIP_INSTALL: YES

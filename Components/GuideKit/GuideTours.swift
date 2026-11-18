@@ -20,6 +20,8 @@ enum GuideTours {
             return anime
         case .myMedia:
             return library
+        case .fileOrganizer, .desktopPet:
+            return nil
         }
     }
 

@@ -172,9 +172,35 @@ private final class AgentConnectionListener: NSObject, NSXPCListenerDelegate {
     private func untrustedReason(_ connection: NSXPCConnection) -> String? {
         #if DEBUG
         if BackgroundRuntimeRole.isIsolatedTest { return nil }
-        // Development builds can be unsigned. Still require the exact host executable.
+        return localHostPathError(connection.processIdentifier)
+        #else
+        var guest: SecCode?
+        let attributes = [kSecGuestAttributePid as String: NSNumber(value: connection.processIdentifier)] as CFDictionary
+        let guestStatus = SecCodeCopyGuestWithAttributes(nil, attributes, [], &guest)
+        guard guestStatus == errSecSuccess, let guest else { return "client code lookup failed (\(guestStatus))" }
+
+        let identifier = "identifier \"com.mivori.app\""
+        let requirementText: String
+        if let team = ownTeamIdentifier ?? Self.readOwnTeamIdentifier() {
+            requirementText = "\(identifier) and anchor apple generic and certificate leaf[subject.OU] = \"\(team)\""
+        } else {
+            // For a locally ad-hoc signed package, also require the exact
+            // containing app's executable, plus its valid Mivori signature.
+            if let reason = localHostPathError(connection.processIdentifier) { return reason }
+            requirementText = identifier
+        }
+        var requirement: SecRequirement?
+        guard SecRequirementCreateWithString(requirementText as CFString, [], &requirement) == errSecSuccess else {
+            return "requirement build failed"
+        }
+        let validity = SecCodeCheckValidity(guest, [], requirement)
+        return validity == errSecSuccess ? nil : "client signature check failed (\(validity))"
+        #endif
+    }
+
+    private func localHostPathError(_ pid: pid_t) -> String? {
         var path = [CChar](repeating: 0, count: 4096)
-        guard proc_pidpath(connection.processIdentifier, &path, UInt32(path.count)) > 0 else {
+        guard proc_pidpath(pid, &path, UInt32(path.count)) > 0 else {
             return "client path unavailable"
         }
         guard let expected = Bundle(url: WaifuXHostBundle.bundleURL)?.executableURL else {
@@ -182,22 +208,6 @@ private final class AgentConnectionListener: NSObject, NSXPCListenerDelegate {
         }
         let actual = URL(fileURLWithPath: String(cString: path)).resolvingSymlinksInPath()
         return actual == expected.resolvingSymlinksInPath() ? nil : "client is not the host executable (\(expected.path))"
-        #else
-        var guest: SecCode?
-        let attributes = [kSecGuestAttributePid as String: NSNumber(value: connection.processIdentifier)] as CFDictionary
-        let guestStatus = SecCodeCopyGuestWithAttributes(nil, attributes, [], &guest)
-        guard guestStatus == errSecSuccess, let guest else { return "client code lookup failed (\(guestStatus))" }
-        guard let team = ownTeamIdentifier ?? Self.readOwnTeamIdentifier() else {
-            return "helper team identifier unavailable"
-        }
-        let text = "identifier \"com.waifux.app\" and anchor apple generic and certificate leaf[subject.OU] = \"\(team)\""
-        var requirement: SecRequirement?
-        guard SecRequirementCreateWithString(text as CFString, [], &requirement) == errSecSuccess else {
-            return "requirement build failed"
-        }
-        let validity = SecCodeCheckValidity(guest, [], requirement)
-        return validity == errSecSuccess ? nil : "client signature check failed (\(validity), team \(team))"
-        #endif
     }
 
     /// 当前进程签名里的团队 ID。可执行文件被删掉后会读不到，所以只在启动时调用并缓存。
@@ -228,7 +238,7 @@ private final class AgentApplicationDelegate: NSObject, NSApplicationDelegate {
                   !root.isEmpty else { exit(2) }
             directory = URL(fileURLWithPath: root).appendingPathComponent("HelperRuntime", isDirectory: true)
         } else {
-            directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("WaifuX")
+            directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Mivori")
         }
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let suffix = BackgroundRuntimeRole.isIsolatedTest ? ".test" : ""

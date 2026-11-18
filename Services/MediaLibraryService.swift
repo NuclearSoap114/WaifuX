@@ -1481,7 +1481,7 @@ final class MediaLibraryService: ObservableObject {
     // MARK: - 最近浏览持久化（量小仍用 UserDefaults）
 
     private var persistRecentsWork: DispatchWorkItem?
-    private static let persistQueue = DispatchQueue(label: "com.waifux.media.persist", qos: .utility)
+    private static let persistQueue = DispatchQueue(label: "com.mivori.media.persist", qos: .utility)
 
     private static func schedulePersist<Value: Encodable & Sendable>(
         value: Value,

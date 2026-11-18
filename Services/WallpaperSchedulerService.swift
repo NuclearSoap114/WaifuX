@@ -114,7 +114,7 @@ class WallpaperSchedulerService: ObservableObject {
     private var pendingBakedAvailability: [String: SceneBakeArtifact] = [:]
     private var bakedAvailabilityGeneration: UInt64 = 0
     private var isBakedAvailabilityRefreshScheduled = false
-    private static let bakedAvailabilityQueue = DispatchQueue(label: "com.waifux.scheduler.bake-availability", qos: .utility)
+    private static let bakedAvailabilityQueue = DispatchQueue(label: "com.mivori.scheduler.bake-availability", qos: .utility)
     private let bakedAvailabilityLifetime: TimeInterval = 60
 
     /// Persists screenID → fingerprint mapping so that display configs can be
@@ -152,7 +152,7 @@ class WallpaperSchedulerService: ObservableObject {
     }
 
     /// 视频播放完成通知（用于"播完即换"模式）
-    static let videoPlaybackEndedNotification = Notification.Name("com.waifux.scheduler.videoPlaybackEnded")
+    static let videoPlaybackEndedNotification = Notification.Name("com.mivori.scheduler.videoPlaybackEnded")
 
     var isGlobalDisplaySyncEnabled: Bool {
         config.isGlobalDisplaySyncEnabled

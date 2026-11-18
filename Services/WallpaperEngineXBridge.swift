@@ -39,11 +39,11 @@ enum WallpaperWakeTopologyPolicy {
     }
 }
 
-private let legacyCLIWebCapturePath = "/tmp/wallpaperengine-cli-capture.png"
+private let legacyCLIWebCapturePath = "/tmp/mivori-wallpaperengine-cli-capture.png"
 
 /// CLI daemon 的 per-screen 截图路径（与 wallpaperengine-cli.swift 中 primaryCapturePath(for:) 保持一致）
 private func legacyCLICapturePath(for screen: Int) -> String {
-    return "/tmp/wallpaperengine-cli-capture-s\(screen).png"
+    return "/tmp/mivori-wallpaperengine-cli-capture-s\(screen).png"
 }
 
 /// Web 实时壁纸预热期间采集的海报候选。
@@ -354,7 +354,7 @@ final class WallpaperEngineXBridge: ObservableObject {
     private var lastCanvasSizeByScreenID: [String: CGSize] = [:]
     /// Web crop 必须按 revision 顺序发送，避免并发 socket 让 daemon 丢掉最新位置。
     private let webCropSendQueue = DispatchQueue(
-        label: "com.waifux.wallpaper.web-crop-ipc",
+        label: "com.mivori.wallpaper.web-crop-ipc",
         qos: .userInitiated
     )
     /// 非隔离存储所有活跃 PID，供 deinit 中安全清理
@@ -696,7 +696,7 @@ final class WallpaperEngineXBridge: ObservableObject {
         }
         if let cli = Self.resolvedLegacyCLIExecutableURL(),
            let identity = OwnedDaemonPIDFile.identity(
-               at: URL(fileURLWithPath: "/tmp/wallpaperengine-cli.pid"), expectedExecutables: [cli]
+               at: URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli.pid"), expectedExecutables: [cli]
            ), identity.stillMatches() {
             result.insert(identity.pid)
         }
@@ -731,16 +731,16 @@ final class WallpaperEngineXBridge: ObservableObject {
         guard CGPreflightScreenCaptureAccess() else { return nil }
         var pids: [pid_t] = []
         if let helperApp = NSWorkspace.shared.runningApplications.first(where: {
-            $0.bundleIdentifier == "com.waifux.app.helper"
+            $0.bundleIdentifier == "com.mivori.app.helper"
         }), helperApp.processIdentifier > 0 {
             pids.append(pid_t(helperApp.processIdentifier))
         }
-        return Self.captureLargestWindowFrame(ownedBy: pids, ownerNames: ["WaifuXHelper"])
+        return Self.captureLargestWindowFrame(ownedBy: pids, ownerNames: [])
     }
 
-    /// daemon 启动时写 `/tmp/wallpaperengine-cli.pid`（wallpaperengine-cli.swift 写入点），退出清理。
+    /// daemon 启动时写 `/tmp/mivori-wallpaperengine-cli.pid`（wallpaperengine-cli.swift 写入点），退出清理。
     private static var webDaemonPIDIfRunning: pid_t? {
-        guard let text = try? String(contentsOfFile: "/tmp/wallpaperengine-cli.pid", encoding: .utf8),
+        guard let text = try? String(contentsOfFile: "/tmp/mivori-wallpaperengine-cli.pid", encoding: .utf8),
               let pid = pid_t(text.trimmingCharacters(in: .whitespacesAndNewlines)),
               pid > 0, kill(pid, 0) == 0 else { return nil }
         return pid
@@ -2700,7 +2700,7 @@ final class WallpaperEngineXBridge: ObservableObject {
 
     /// 通过 Unix Socket 直接向 wallpaperengine-cli daemon 发送音频控制 IPC
     private func sendAudioControlToWebDaemon(muted: Bool?, volume: Double?, screen: Int? = nil) {
-        let socketPath = "/tmp/wallpaperengine-cli.sock"
+        let socketPath = "/tmp/mivori-wallpaperengine-cli.sock"
         let msg = WebDaemonAudioMessage(command: "audioControl", muted: muted, volume: volume, screen: screen)
         guard let data = try? JSONEncoder().encode(msg) else { return }
 
@@ -2749,7 +2749,7 @@ final class WallpaperEngineXBridge: ObservableObject {
         let msg = WebDaemonControlMessage(command: "goOpaque", screen: screen)
         guard let data = try? JSONEncoder().encode(msg) else { return false }
         return await Task.detached(priority: .utility) {
-            let socketPath = "/tmp/wallpaperengine-cli.sock"
+            let socketPath = "/tmp/mivori-wallpaperengine-cli.sock"
             var addr = sockaddr_un()
             addr.sun_family = sa_family_t(AF_UNIX)
             strncpy(&addr.sun_path, socketPath, MemoryLayout.size(ofValue: addr.sun_path) - 1)
@@ -2933,7 +2933,7 @@ final class WallpaperEngineXBridge: ObservableObject {
 
     /// 通用 fire-and-forget Unix socket 发送（audio / media 共用）。
     private func sendFireAndForgetToWebDaemon(_ data: Data, on queue: DispatchQueue? = nil) {
-        let socketPath = "/tmp/wallpaperengine-cli.sock"
+        let socketPath = "/tmp/mivori-wallpaperengine-cli.sock"
         (queue ?? DispatchQueue.global(qos: .userInitiated)).async {
             var addr = sockaddr_un()
             addr.sun_family = sa_family_t(AF_UNIX)
@@ -3433,10 +3433,10 @@ final class WallpaperEngineXBridge: ObservableObject {
         lastAppliedScreenConfigurations.removeAll()
     }
 
-    /// 同步终止 `/tmp/wallpaperengine-cli.pid` 指向的 daemon 进程（无视 `activeRenderKind`）。
+    /// 同步终止 `/tmp/mivori-wallpaperengine-cli.pid` 指向的 daemon 进程（无视 `activeRenderKind`）。
     /// App 退出 / 切换壁纸时使用，避免遗留 daemon 持续渲染 web 壁纸。
     private static func killLegacyDaemonIfRunning(waitForExit: Bool) async {
-        let file = URL(fileURLWithPath: "/tmp/wallpaperengine-cli.pid")
+        let file = URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli.pid")
         guard let pid = OwnedDaemonPIDFile.readPID(at: file) else { return }
         guard let cli = resolvedLegacyCLIExecutableURL(),
               let identity = OwnedDaemonPIDFile.identity(at: file, expectedExecutables: [cli]) else {
@@ -3476,7 +3476,7 @@ final class WallpaperEngineXBridge: ObservableObject {
 
     /// App 退出时同步杀死旧 CLI daemon，不等待退出，避免阻塞主线程。
     private static func killLegacyDaemonSync() {
-        let file = URL(fileURLWithPath: "/tmp/wallpaperengine-cli.pid")
+        let file = URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli.pid")
         guard let pid = OwnedDaemonPIDFile.readPID(at: file) else { return }
         if let cli = resolvedLegacyCLIExecutableURL(),
            let identity = OwnedDaemonPIDFile.identity(at: file, expectedExecutables: [cli]) {
@@ -3846,7 +3846,7 @@ final class WallpaperEngineXBridge: ObservableObject {
               let screenIndex = Self.legacyCLIScreenIndex(for: posterScreen) else { return nil }
         try await Task.sleep(nanoseconds: 7_000_000_000)
         let fileManager = FileManager.default
-        let sampleDirectory = fileManager.temporaryDirectory.appendingPathComponent("WaifuX/WebPosterSamples", isDirectory: true)
+        let sampleDirectory = fileManager.temporaryDirectory.appendingPathComponent("Mivori/WebPosterSamples", isDirectory: true)
         let samplePrefix = "web-poster-\(UUID().uuidString)"
         var sampleURLs: [URL] = []
         defer { for url in sampleURLs { try? fileManager.removeItem(at: url) } }
@@ -4279,7 +4279,7 @@ final class WallpaperEngineXBridge: ObservableObject {
         guard let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
             return nil
         }
-        let directory = caches.appendingPathComponent("com.waifux.wallpaperengine/renderer-logs", isDirectory: true)
+        let directory = caches.appendingPathComponent("com.mivori.wallpaperengine/renderer-logs", isDirectory: true)
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             let safeID = screenID.map { ch -> Character in
@@ -4488,7 +4488,7 @@ final class WallpaperEngineXBridge: ObservableObject {
             let command = String(columns[2])
             guard command.contains("/wallpaper-wgpu "),
                   command.contains(" --wallpaper-control "),
-                  command.contains("waifux-wallpaper-wgpu-wallpaper-") else {
+                  command.contains("mivori-wallpaper-wgpu-wallpaper-") else {
                 return nil
             }
             return DiscoveredDesktopRenderer(
@@ -4503,7 +4503,7 @@ final class WallpaperEngineXBridge: ObservableObject {
         let safeID = screenID.map { ch -> Character in
             ch.isLetter || ch.isNumber || ch == "-" || ch == "_" ? ch : "_"
         }
-        return "waifux-wallpaper-wgpu-wallpaper-\(String(safeID))-"
+        return "mivori-wallpaper-wgpu-wallpaper-\(String(safeID))-"
     }
 
     /// 清除不在当前 `screenProcesses` 登记中的桌面 renderer。先 SIGCONT 是为
@@ -5009,7 +5009,7 @@ final class WallpaperEngineXBridge: ObservableObject {
             ch.isLetter || ch.isNumber || ch == "-" || ch == "_" ? ch : "_"
         }
         return URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-            .appendingPathComponent("waifux-wallpaper-wgpu-wallpaper-\(String(safeID))-\(UUID().uuidString).json")
+            .appendingPathComponent("mivori-wallpaper-wgpu-wallpaper-\(String(safeID))-\(UUID().uuidString).json")
     }
 
     /// 热切换前删除上一张场景写出的 canvas 尺寸，避免被误用作新场景的裁切依据。
@@ -5516,7 +5516,7 @@ final class WallpaperEngineXBridge: ObservableObject {
     /// daemon PID 不存在时应按“无旧 renderer”处理，否则新视频会误走跨类型预热，
     /// 将尚未提交的黑色窗口直接留在桌面上。
     private static var isLegacyDaemonRunning: Bool {
-        let pidPath = "/tmp/wallpaperengine-cli.pid"
+        let pidPath = "/tmp/mivori-wallpaperengine-cli.pid"
         guard let pidText = try? String(contentsOfFile: pidPath, encoding: .utf8),
               let pid = pid_t(pidText.trimmingCharacters(in: .whitespacesAndNewlines)),
               pid > 0 else { return false }
@@ -6035,29 +6035,6 @@ final class WallpaperEngineXBridge: ObservableObject {
             }
         }
 
-        // 5. bundle 同级目录（开发/调试）
-        let siblingPath = Bundle.main.bundleURL.deletingLastPathComponent().appendingPathComponent("wallpaper-wgpu")
-        if FileManager.default.fileExists(atPath: siblingPath.path) {
-            print("[WallpaperEngineXBridge] 找到 wallpaper-wgpu: bundle 同级")
-            return siblingPath
-        } else {
-            print("[WallpaperEngineXBridge] 未找到: \(siblingPath.path)")
-        }
-
-        // 6. 项目开发路径
-        let projectPaths = [
-            ("/Volumes/mac/CodeLibrary/Claude/WallHaven/wallpaper-wgpu", "项目根目录"),
-            ("/Volumes/mac/CodeLibrary/Claude/WallHaven/Resources/wallpaper-wgpu", "项目 Resources")
-        ]
-        for (path, label) in projectPaths {
-            if FileManager.default.fileExists(atPath: path) {
-                print("[WallpaperEngineXBridge] 找到 wallpaper-wgpu: \(label)")
-                return URL(fileURLWithPath: path)
-            } else {
-                print("[WallpaperEngineXBridge] 未找到: \(path) (\(label))")
-            }
-        }
-
         print("[WallpaperEngineXBridge] ❌ wallpaper-wgpu 在所有路径中均未找到")
         return nil
     }
@@ -6065,7 +6042,6 @@ final class WallpaperEngineXBridge: ObservableObject {
     /// 解析 `wallpaperengine-cli` 可执行文件路径（web 壁纸 daemon）
     nonisolated static func resolvedLegacyCLIExecutableURL() -> URL? {
         if let running = RendererComponentStore.runningWebExecutableURL() { return running }
-        if let updated = RendererComponentStore.executableURL(.web) { return updated }
         for candidate in WaifuXHostBundle.resourceCandidates(named: "wallpaperengine-cli")
         where FileManager.default.isExecutableFile(atPath: candidate.path) {
             return candidate
@@ -6104,29 +6080,6 @@ final class WallpaperEngineXBridge: ObservableObject {
                 return resourcePath
             } else {
                 print("[WallpaperEngineXBridge] 未找到: \(resourcePath.path)")
-            }
-        }
-
-        // 5. bundle 同级目录（开发/调试）
-        let siblingPath = Bundle.main.bundleURL.deletingLastPathComponent().appendingPathComponent("wallpaperengine-cli")
-        if FileManager.default.fileExists(atPath: siblingPath.path) {
-            print("[WallpaperEngineXBridge] 找到 wallpaperengine-cli: bundle 同级")
-            return siblingPath
-        } else {
-            print("[WallpaperEngineXBridge] 未找到: \(siblingPath.path)")
-        }
-
-        // 6. 项目开发路径
-        let projectPaths = [
-            "/Volumes/mac/CodeLibrary/Claude/WallHaven/wallpaperengine-cli",
-            "/Volumes/mac/CodeLibrary/Claude/WallHaven/Resources/wallpaperengine-cli"
-        ]
-        for path in projectPaths {
-            if FileManager.default.fileExists(atPath: path) {
-                print("[WallpaperEngineXBridge] 找到 wallpaperengine-cli: \(path)")
-                return URL(fileURLWithPath: path)
-            } else {
-                print("[WallpaperEngineXBridge] 未找到: \(path)")
             }
         }
 
@@ -6427,7 +6380,7 @@ final class WallpaperEngineXBridge: ObservableObject {
         // 交替复制一份再 setDesktop，避免系统缓存固定路径旧图
         bakedStaticDesktopSlot = 1 - bakedStaticDesktopSlot
         let cacheDir = URL(fileURLWithPath: NSHomeDirectory())
-            .appendingPathComponent("Library/Caches/com.waifux.wallpaperengine/baked-static-wallpapers")
+            .appendingPathComponent("Library/Caches/com.mivori.wallpaperengine/baked-static-wallpapers")
         try? FileManager.default.createDirectory(at: cacheDir, withIntermediateDirectories: true)
         let slotURL = cacheDir.appendingPathComponent("\(cacheKey)_s\(bakedStaticDesktopSlot)\(imageURL.pathExtension.isEmpty ? ".jpg" : ".\(imageURL.pathExtension)")")
         try? FileManager.default.removeItem(at: slotURL)

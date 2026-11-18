@@ -325,7 +325,7 @@ enum WebOfflineBakeService {
         let durationSeconds = 6.0
         let fileManager = FileManager.default
         let directory = fileManager.temporaryDirectory
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("TransientWebPosters", isDirectory: true)
         let videoURL = directory.appendingPathComponent("\(UUID().uuidString).mp4")
         try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)

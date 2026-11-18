@@ -101,7 +101,7 @@ struct GIFAwareMiddleFrameImageProcessor: ImageProcessor {
     init(targetSize: CGSize, scaleFactor: CGFloat) {
         self.downsampleSize = targetSize
         self.pixelScale = max(1, scaleFactor)
-        self.identifier = "com.waifux.gifmid|\(Int(targetSize.width))x\(Int(targetSize.height))@\(Int(pixelScale))"
+        self.identifier = "com.mivori.gifmid|\(Int(targetSize.width))x\(Int(targetSize.height))@\(Int(pixelScale))"
     }
 
     func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> NSImage? {

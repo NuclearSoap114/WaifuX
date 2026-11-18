@@ -51,15 +51,15 @@ extension NSScreen {
 }
 
 // MARK: - Constants
-private let SOCKET_PATH = "/tmp/wallpaperengine-cli.sock"
-private let PID_PATH = "/tmp/wallpaperengine-cli.pid"
-private let DEBUG_LOG_PATH = "/tmp/wallpaperengine-cli-debug.log"
+private let SOCKET_PATH = "/tmp/mivori-wallpaperengine-cli.sock"
+private let PID_PATH = "/tmp/mivori-wallpaperengine-cli.pid"
+private let DEBUG_LOG_PATH = "/tmp/mivori-wallpaperengine-cli-debug.log"
 /// Scene/Web 截图写入；Host 会将 Web capture 转码为 canonical poster 后再同步静态目标。
-private let PRIMARY_CAPTURE_PATH = "/tmp/wallpaperengine-cli-capture.png"
+private let PRIMARY_CAPTURE_PATH = "/tmp/mivori-wallpaperengine-cli-capture.png"
 
 /// Per-screen capture paths（多屏并行壁纸避免共享文件竞争）
 private func primaryCapturePath(for screen: Int) -> String {
-    return "/tmp/wallpaperengine-cli-capture-s\(screen).png"
+    return "/tmp/mivori-wallpaperengine-cli-capture-s\(screen).png"
 }
 
 private func isDynamicLockScreenEnabledForCurrentLaunch() -> Bool {
@@ -71,7 +71,7 @@ private func isDynamicLockScreenEnabledForCurrentLaunch() -> Bool {
 
 /// 与 App「系统壁纸同步」开关对齐。
 /// 优先读热更新控制文件（App 改开关后立刻生效），再回退到启动环境变量；都没有则默认开启。
-private let systemWallpaperSyncControlPath = "/tmp/waifux-system-wallpaper-sync.json"
+private let systemWallpaperSyncControlPath = "/tmp/mivori-system-wallpaper-sync.json"
 
 private func isSystemWallpaperSyncEnabledForCurrentLaunch() -> Bool {
     if let data = try? Data(contentsOf: URL(fileURLWithPath: systemWallpaperSyncControlPath)),
@@ -94,7 +94,7 @@ private func isSystemWallpaperSyncEnabledForCurrentLaunch() -> Bool {
     return rawValue == "1" || rawValue == "true" || rawValue == "yes"
 }
 
-/// CLI 调试日志：追加到 `/tmp/wallpaperengine-cli-debug.log`。
+/// CLI 调试日志：追加到 `/tmp/mivori-wallpaperengine-cli-debug.log`。
 ///
 /// daemon 会长期运行，这里保留 1MB 上限并在超限时截尾，避免日志无限增长。
 /// 单进程写（daemon 独占），用 O_APPEND 原子追加 + 计数触发 fstat，避免热路径反复 syscall。
@@ -5134,7 +5134,7 @@ private final class WebRealtimeStreamRecorder: NSObject, SCStreamOutput, SCStrea
     private let options: Options
     private let progress: (Int, TimeInterval) -> Void
     private let completion: (Result<Void, Error>) -> Void
-    private let sampleQueue = DispatchQueue(label: "com.waifux.web-bake.stream")
+    private let sampleQueue = DispatchQueue(label: "com.mivori.web-bake.stream")
 
     private var stream: SCStream?
     private var writer: AVAssetWriter?
@@ -7064,7 +7064,7 @@ private final class Daemon: NSObject, NSApplicationDelegate {
                             } else if let err = DesktopWallpaperManager.shared.lastErrorMessage {
                                 sendResponse("ERROR:\(err)")
                             } else {
-                                sendResponse("ERROR:壁纸渲染失败，请尝试其他壁纸（查看 /tmp/wallpaperengine-cli-daemon.log 获取详情）")
+                                sendResponse("ERROR:壁纸渲染失败，请尝试其他壁纸（查看 /tmp/mivori-wallpaperengine-cli-daemon.log 获取详情）")
                             }
                         }
                     } else {
@@ -7547,7 +7547,7 @@ struct WallpaperEngineCLI {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: executable)
         task.arguments = ["daemon"]
-        let logURL = URL(fileURLWithPath: "/tmp/wallpaperengine-cli-daemon.log")
+        let logURL = URL(fileURLWithPath: "/tmp/mivori-wallpaperengine-cli-daemon.log")
         // FileHandle(forWritingTo:) requires the file to exist; otherwise logging is silently disabled.
         if !FileManager.default.fileExists(atPath: logURL.path) {
             FileManager.default.createFile(atPath: logURL.path, contents: nil, attributes: nil)

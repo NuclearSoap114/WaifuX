@@ -15,7 +15,7 @@ import AppKit
 //   失配自动失效，不会长期返回旧封面。字节级相同替换由签名窗口兜底（见 matches）。
 // - Workshop 目录解析（contentsOfDirectory / project.json）在专用 actor 上执行，
 //   并发上限 2，防止外置卷 I/O 风暴；同一 key 的并发请求单飞合并。
-// - 单写者 + 原子写持久化到 ~/Library/Caches/WaifuX，与 LocalImageThumbnails 同根，
+// - 单写者 + 原子写持久化到 ~/Library/Caches/Mivori，与 LocalImageThumbnails 同根，
 //   用户清缓存即整体重置，重跑一轮命中短路代价小。
 //
 // 隔离边界：仅主 App（WaifuX target）编译。Helper target 的显式源清单不含本文件，
@@ -225,7 +225,7 @@ final class LibraryCoverMetadataStore {
 
     private var storeURL: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("WaifuX/LibraryCoverMetadata-v1.json")
+            .appendingPathComponent("Mivori/LibraryCoverMetadata-v1.json")
     }
 
     private init() {}

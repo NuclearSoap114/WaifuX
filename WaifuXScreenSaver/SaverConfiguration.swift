@@ -3,7 +3,7 @@ import Foundation
 /// 屏保侧配置。
 ///
 /// 由 App 的 `ScreenSaverService` 原子写入
-/// `~/Library/Application Support/WaifuX/screensaver.json`；屏保宿主只读。
+/// `~/Library/Application Support/Mivori/screensaver.json`；屏保宿主只读。
 /// 设计与 MirageScreenSaver 一致：不依赖主程序运行，也不需要 IPC。
 ///
 /// 字段同时承担"身份"职责：内容变化（换壁纸 / 改裁剪 / 改填充）会让
@@ -42,7 +42,7 @@ struct SaverConfiguration {
 
     static var configurationURL: URL {
         SaverHomeDirectory.url
-            .appendingPathComponent("Library/Application Support/WaifuX", isDirectory: true)
+            .appendingPathComponent("Library/Application Support/Mivori", isDirectory: true)
             .appendingPathComponent("screensaver.json")
     }
 

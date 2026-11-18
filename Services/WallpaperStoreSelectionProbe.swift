@@ -19,7 +19,7 @@ enum WallpaperStoreSelectionProbe {
         case unknown
     }
 
-    static let extensionBundleID = "com.waifux.app.wallpaperextension"
+    static let extensionBundleID = "com.mivori.app.wallpaperextension"
 
     static var storeURL: URL {
         FileManager.default.homeDirectoryForCurrentUser

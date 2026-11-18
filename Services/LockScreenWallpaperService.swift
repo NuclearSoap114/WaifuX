@@ -46,10 +46,10 @@ final class LockScreenWallpaperService: ObservableObject {
     }
 
     static let playbackStateNotification = Notification.Name(
-        "com.waifux.wallpaper.lockScreenPlaybackStateDidChange"
+        "com.mivori.wallpaper.lockScreenPlaybackStateDidChange"
     )
     static let distributedPlaybackStateNotification = Notification.Name(
-        "com.waifux.wallpaper.lockScreenPlaybackStateDidChange"
+        "com.mivori.wallpaper.lockScreenPlaybackStateDidChange"
     )
     static let stateUserInfoKey = "state"
     static let generationUserInfoKey = "transitionGeneration"
@@ -104,7 +104,7 @@ final class LockScreenWallpaperService: ObservableObject {
     private var explicitUnlockObservedAt: Date?
     private let staleSessionLockGracePeriod: TimeInterval = 3.0
 
-    private let appGroupID = "group.com.waifux.app"
+    private let appGroupID = "group.com.mivori.app"
     private let prefsFileName = "waifux-wallpaper-prefs.json"
     private let videoDirName = "WallpaperVideos"
     private let imageDirName = "WallpaperImages"
@@ -963,7 +963,7 @@ final class LockScreenWallpaperService: ObservableObject {
         let center = CFNotificationCenterGetDarwinNotifyCenter()
         CFNotificationCenterPostNotification(
             center,
-            CFNotificationName("com.waifux.app.wallpaper.prefsChanged" as CFString),
+            CFNotificationName("com.mivori.app.wallpaper.prefsChanged" as CFString),
             nil, nil, true
         )
     }

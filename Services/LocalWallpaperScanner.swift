@@ -24,7 +24,7 @@ final class LocalWallpaperScanner {
     private static let persistentIndexMigrationKey = "managedLibraryPersistentIndexMigration"
     /// v2：v1 的扫描范围只有 `Wallpapers/` 与 `Media/` 两个子目录，而历史版本会把媒体
     /// 文件直接落在库根顶层（`DownloadPathManager.inferDefaultLocation` 的兜底分支就返回
-    /// root）。默认路径（`~/Library/Application Support/WaifuX`）用户的整库可能都在那一层：
+    /// root）。默认路径（`~/Library/Application Support/Mivori`）用户的整库可能都在那一层：
     /// v1 扫不到任何文件，却照样把完成标记写掉，之后永不扫盘 → 「我的库」永久空白
     /// （38.0.14x 用户反馈）。bump 到 2 让这批设备再补扫一次，同时把库根顶层纳入扫描。
     private static let persistentIndexMigrationVersion = 2

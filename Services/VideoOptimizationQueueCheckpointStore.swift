@@ -215,7 +215,7 @@ struct VideoOptimizationQueueCheckpointStore {
             in: .userDomainMask
         ).first ?? FileManager.default.temporaryDirectory
         return applicationSupport
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("VideoOptimization", isDirectory: true)
             .appendingPathComponent("pending-queue.json")
     }

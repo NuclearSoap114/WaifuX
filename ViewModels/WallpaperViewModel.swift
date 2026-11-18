@@ -169,7 +169,7 @@ class WallpaperViewModel: ObservableObject {
     }
 
     // API Key - 使用 Keychain 安全存储（优化：内存缓存 + 异步访问）
-    private let apiKeyService = "com.waifux.wallhaven.apikey"
+    private let apiKeyService = "com.mivori.wallhaven.apikey"
     private let apiKeyAccount = "wallhaven_api_key"
 
     // 内存缓存，避免重复 Keychain 访问

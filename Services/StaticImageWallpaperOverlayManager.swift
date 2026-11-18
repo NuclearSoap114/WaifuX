@@ -1094,7 +1094,7 @@ private enum StaticImageLetterboxAnalyzer {
         let cacheRoot = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         let directory = cacheRoot
-            .appendingPathComponent("WaifuX", isDirectory: true)
+            .appendingPathComponent("Mivori", isDirectory: true)
             .appendingPathComponent("StaticSystemWallpapers", isDirectory: true)
         let key = "\(imageCacheKey(for: url))|\(crop.x),\(crop.y),\(crop.w),\(crop.h)"
         return directory.appendingPathComponent("\(stableHashHex(key)).\(fileExtension)")

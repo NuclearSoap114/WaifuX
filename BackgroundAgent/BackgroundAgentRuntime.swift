@@ -1334,7 +1334,12 @@ final class BackgroundAgentRuntime {
             try SteamServiceManager.shared.cancelDownload(taskID: try a.string("taskID"))
             return [:]
         case "steam.login.wait":
-            try await SteamServiceManager.shared.login(username: a.string("username"), password: a.string("password"), guardCode: a.optionalString("code"))
+            try await SteamServiceManager.shared.login(
+                username: a.string("username"),
+                password: a.string("password"),
+                guardCode: a.optionalString("code"),
+                preferGuardCode: a.bool("preferGuardCode")
+            )
             return [:]
         case "steam.subscriptions.wait":
             let page = try await SteamServiceManager.shared.fetchSubscriptions(startIndex: a.integer("start"))
@@ -1534,6 +1539,6 @@ final class BackgroundAgentRuntime {
 }
 
 extension Notification.Name {
-    static let backgroundAgentReleaseMemory = Notification.Name("com.waifux.helper.releaseMemory")
+    static let backgroundAgentReleaseMemory = Notification.Name("com.mivori.helper.releaseMemory")
 }
 #endif
