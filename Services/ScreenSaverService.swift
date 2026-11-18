@@ -23,7 +23,7 @@ final class ScreenSaverService: ObservableObject {
     /// 构建产物和内部可执行文件沿用稳定名称；系统列表可见的安装文件名按语言选择。
     static let saverBundleName = "WaifuXScreenSaver.saver"
     static let saverExecutableName = "WaifuXScreenSaver"
-    static let saverBundleIdentifier = "com.mivori.app.screensaver"
+    static let saverBundleIdentifier = "io.macdesk.mivori.screensaver"
     private static let installedBundleNames = [
         "WaifuX屏保服务.saver",
         "WaifuX Screen Saver Service.saver",
@@ -36,7 +36,7 @@ final class ScreenSaverService: ObservableObject {
         return installedBundleNames[1]
     }
     /// 配置写入后广播，让正在运行的屏保热重载。
-    static let configurationChangedNotification = Notification.Name("com.mivori.app.screensaver.configurationChanged")
+    static let configurationChangedNotification = Notification.Name("io.macdesk.mivori.screensaver.configurationChanged")
 
     enum ScreenSaverError: LocalizedError {
         case bundledComponentMissing

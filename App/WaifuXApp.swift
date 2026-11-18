@@ -7,16 +7,10 @@ import ExceptionHandling
 import WebKit
 import Darwin
 
-/// 后台 Helper 连接横幅的挂载位置。
-///
-/// 横幅是窗口级 overlay，而 `EdgeToEdgeHostingView` 铺满整个窗口、自绘顶栏
-/// （红绿灯 + Tabs）就画在最顶部那一条：直接 `overlay(alignment: .top)`
-/// 会把横幅压在红绿灯与 Tabs 上面。这里让出顶栏高度，让横幅落在内容区顶部。
 private extension View {
     func attachingBackgroundAgentBanner() -> some View {
-        overlay(alignment: .top) {
+        safeAreaInset(edge: .bottom, spacing: 0) {
             BackgroundAgentConnectionBanner()
-                .padding(.top, MainTopBarLayout.legacyContentTopPadding)
         }
     }
 }
@@ -1313,7 +1307,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     nonisolated private func isExtensionElected(extensionURL: URL) -> Bool {
         let output = processOutput(
             launchPath: "/usr/bin/pluginkit",
-            arguments: ["-m", "-v", "-i", "com.mivori.app.wallpaperextension"]
+            arguments: ["-m", "-v", "-i", "io.macdesk.mivori.wallpaperextension"]
         )
         return WallpaperExtensionElection.isElected(
             output: output,
@@ -1348,7 +1342,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         // pluginkit -a 只注册不启用，必须显式 -e use 才能让 WallpaperAgent 加载扩展。
         runRegistrationTool(
             "/usr/bin/pluginkit",
-            arguments: ["-e", "use", "-i", "com.mivori.app.wallpaperextension"],
+            arguments: ["-e", "use", "-i", "io.macdesk.mivori.wallpaperextension"],
             label: "pluginkit enable"
         )
     }
@@ -1359,7 +1353,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let targetPath = extensionURL.standardizedFileURL.path
         let output = processOutput(
             launchPath: "/usr/bin/pluginkit",
-            arguments: ["-m", "-v", "-i", "com.mivori.app.wallpaperextension"]
+            arguments: ["-m", "-v", "-i", "io.macdesk.mivori.wallpaperextension"]
         )
         guard WallpaperExtensionElection.isElected(output: output, targetPath: targetPath) else {
             if attempt < 1 {
@@ -1383,7 +1377,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             let standardized = url.standardizedFileURL
             let path = standardized.path
             guard seen.insert(path).inserted else { return }
-            guard wallpaperExtensionBundleID(at: standardized) == "com.mivori.app.wallpaperextension" else {
+            guard wallpaperExtensionBundleID(at: standardized) == "io.macdesk.mivori.wallpaperextension" else {
                 return
             }
             if !path.hasPrefix(currentAppURL.path + "/") {
@@ -1426,7 +1420,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     nonisolated private func plugInKitWallpaperExtensionCandidates() -> [URL] {
         let output = processOutput(
             launchPath: "/usr/bin/pluginkit",
-            arguments: ["-m", "-A", "-D", "-v", "-i", "com.mivori.app.wallpaperextension"]
+            arguments: ["-m", "-A", "-D", "-v", "-i", "io.macdesk.mivori.wallpaperextension"]
         )
 
         var result: [URL] = []
@@ -1487,7 +1481,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             DispatchQueue.main.sync { NSWorkspace.shared.runningApplications }
         }
         let staleApps = runningApps.compactMap { app -> (app: NSRunningApplication, path: String)? in
-            guard app.bundleIdentifier == "com.mivori.app.wallpaperextension",
+            guard app.bundleIdentifier == "io.macdesk.mivori.wallpaperextension",
                   let executableURL = app.executableURL?.standardizedFileURL,
                   !executableURL.path.hasPrefix(currentPrefix) else {
                 return nil

@@ -13,9 +13,9 @@ import AVFoundation
 import Foundation
 import os
 
-private let appLog = OSLog(subsystem: "com.mivori.app", category: "ExtensionIPC")
-private let appWillTerminateNotificationName = "com.mivori.app.wallpaper.appWillTerminate"
-private let commandsChangedNotificationName = "com.mivori.app.wallpaper.commandsChanged"
+private let appLog = OSLog(subsystem: "io.macdesk.mivori", category: "ExtensionIPC")
+private let appWillTerminateNotificationName = "io.macdesk.mivori.wallpaper.appWillTerminate"
+private let commandsChangedNotificationName = "io.macdesk.mivori.wallpaper.commandsChanged"
 
 /// Publication/consumption evidence, not WindowServer presentation confirmation.
 enum WallpaperSourceReadiness: Equatable, Sendable {
@@ -70,7 +70,7 @@ struct IPCCommand: Codable {
 /// Socket 文件路径
 private var socketURL: URL? {
     guard !BackgroundRuntimeRole.isIsolatedTest else { return nil }
-    return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")?
+    return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")?
         .appendingPathComponent("socket/extension.ipc")
 }
 
@@ -504,7 +504,7 @@ final class WallpaperExtensionSocketServer: @unchecked Sendable {
         let center = CFNotificationCenterGetDarwinNotifyCenter()
         CFNotificationCenterPostNotification(
             center,
-            CFNotificationName("com.mivori.app.wallpaper.extensionReload" as CFString),
+            CFNotificationName("io.macdesk.mivori.wallpaper.extensionReload" as CFString),
             nil,
             nil,
             true
@@ -894,7 +894,7 @@ final class WallpaperExtensionSocketServer: @unchecked Sendable {
         }
 
         guard !BackgroundRuntimeRole.isIsolatedTest,
-              let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") else {
+              let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori") else {
             return nil
         }
 

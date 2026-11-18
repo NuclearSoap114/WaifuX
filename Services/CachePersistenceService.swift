@@ -34,7 +34,7 @@ final class CachePersistenceService {
             appSupport = FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first!
-            .appendingPathComponent("com.mivori.app/CachePersistence")
+            .appendingPathComponent("io.macdesk.mivori/CachePersistence")
         }
 
         // DiskStorage.path = directory + "/" + name (与 hyperoslo/Cache DiskStorage 保持一致)

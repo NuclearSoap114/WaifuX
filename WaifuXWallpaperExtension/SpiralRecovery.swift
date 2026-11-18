@@ -17,7 +17,7 @@ import os
 
 enum SpiralRecovery {
     /// Helper 的 WallpaperExtensionAgentHealer 监听此通知并执行安全健康检查。
-    static let agentStuckNotification = "com.mivori.app.wallpaper.agentStuck"
+    static let agentStuckNotification = "io.macdesk.mivori.wallpaper.agentStuck"
 
     /// 发出健康检查信号的连续空连接数。
     private static let emptyThreshold = 4

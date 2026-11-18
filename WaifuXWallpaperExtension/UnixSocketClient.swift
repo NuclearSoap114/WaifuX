@@ -50,7 +50,7 @@ final class UnixSocketClient: Sendable {
 
     /// Socket 文件路径
     private static var socketPath: String? {
-        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")?
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")?
             .appendingPathComponent("socket/extension.ipc")
             .path
     }

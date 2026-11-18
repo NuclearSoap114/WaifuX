@@ -1,6 +1,6 @@
 name: Mivori
 options:
-  bundleIdPrefix: com.mivori
+  bundleIdPrefix: io.macdesk.mivori
   deploymentTarget:
     macOS: "14.4"
   xcodeVersion: "26.4"
@@ -111,13 +111,13 @@ targets:
       - path: BackgroundAgent/BackgroundAgentRegistration.swift
       - path: BackgroundAgent/BackgroundChildProcessCleanup.swift
       - path: BackgroundAgent/WaifuXPreferences.swift
-      - path: BackgroundAgent/com.mivori.app.helper.plist
+      - path: BackgroundAgent/io.macdesk.mivori.helper.plist
         buildPhase:
           copyFiles:
             destination: wrapper
             subpath: Contents/Library/LaunchAgents
       # 备用注册（只换 Label）：BTM 默认记录损坏时「修复后台服务」改注册到它。
-      - path: BackgroundAgent/com.mivori.app.helper.relinked.plist
+      - path: BackgroundAgent/io.macdesk.mivori.helper.relinked.plist
         buildPhase:
           copyFiles:
             destination: wrapper
@@ -125,7 +125,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: Mivori
-        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app
+        PRODUCT_BUNDLE_IDENTIFIER: io.macdesk.mivori
         MARKETING_VERSION: 1.4.2
         CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
@@ -328,7 +328,7 @@ targets:
         com.apple.security.network.client: true
         com.apple.security.automation.apple-events: true
         com.apple.security.application-groups:
-          - group.com.mivori.app
+          - group.io.macdesk.mivori
 
   WaifuXHelper:
     type: application
@@ -349,8 +349,8 @@ targets:
         excludes:
           - Info.plist
           - BackgroundAgent.entitlements
-          - com.mivori.app.helper.plist
-          - com.mivori.app.helper.relinked.plist
+          - io.macdesk.mivori.helper.plist
+          - io.macdesk.mivori.helper.relinked.plist
       - path: Components/DisplaySelectorSheet.swift
       - path: Components/ExploreChips.swift
       - path: Components/PerformanceModifiers.swift
@@ -525,7 +525,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: WaifuXHelper
-        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app.helper
+        PRODUCT_BUNDLE_IDENTIFIER: io.macdesk.mivori.helper
         MARKETING_VERSION: 1.4.2
         CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
@@ -543,7 +543,7 @@ targets:
         com.apple.security.network.client: true
         com.apple.security.automation.apple-events: true
         com.apple.security.application-groups:
-          - group.com.mivori.app
+          - group.io.macdesk.mivori
 
   WaifuXWallpaperExtension:
     type: app-extension
@@ -554,7 +554,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: WaifuXWallpaperExtension
-        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app.wallpaperextension
+        PRODUCT_BUNDLE_IDENTIFIER: io.macdesk.mivori.wallpaperextension
         MARKETING_VERSION: 1.4.2
         CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"
@@ -571,7 +571,7 @@ targets:
         # including Debug and local package builds.
         com.apple.security.app-sandbox: true
         com.apple.security.application-groups:
-          - group.com.mivori.app
+          - group.io.macdesk.mivori
 
   # 屏保组件：独立 .saver 包，由系统 legacyScreenSaver 进程加载。
   # 只读 App 写好的 ~/Library/Application Support/Mivori/screensaver.json，
@@ -586,7 +586,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: WaifuXScreenSaver
-        PRODUCT_BUNDLE_IDENTIFIER: com.mivori.app.screensaver
+        PRODUCT_BUNDLE_IDENTIFIER: io.macdesk.mivori.screensaver
         MARKETING_VERSION: 1.4.2
         CURRENT_PROJECT_VERSION: 1.4.2
         SWIFT_VERSION: "6.0"

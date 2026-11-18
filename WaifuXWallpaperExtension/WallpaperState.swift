@@ -76,7 +76,7 @@ final class WallpaperState: Sendable {
                 let state = Unmanaged<WallpaperState>.fromOpaque(observer).takeUnretainedValue()
                 state.clearCaches()
             },
-            "com.mivori.app.wallpaper.prefsChanged" as CFString,
+            "io.macdesk.mivori.wallpaper.prefsChanged" as CFString,
             nil,
             .deliverImmediately
         )

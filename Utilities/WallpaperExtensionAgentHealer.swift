@@ -40,10 +40,10 @@ enum WallpaperExtensionRecoveryPolicy {
         signatureValid: Bool, signingIdentifier: String?, entitlements: [String: Any]?
     ) -> String? {
         guard signatureValid else { return "invalid code signature" }
-        guard signingIdentifier == "com.mivori.app.wallpaperextension" else { return "unexpected signing identifier" }
+        guard signingIdentifier == "io.macdesk.mivori.wallpaperextension" else { return "unexpected signing identifier" }
         guard let entitlements else { return "entitlements unavailable" }
         guard entitlements["com.apple.security.app-sandbox"] as? Bool == true else { return "missing app-sandbox" }
-        guard (entitlements["com.apple.security.application-groups"] as? [String])?.contains("group.com.mivori.app") == true else {
+        guard (entitlements["com.apple.security.application-groups"] as? [String])?.contains("group.io.macdesk.mivori") == true else {
             return "missing application group"
         }
         return nil
@@ -225,10 +225,10 @@ final class WallpaperExtensionAgentHealer: @unchecked Sendable {
     static let shared = WallpaperExtensionAgentHealer()
 
     /// 与扩展侧 SpiralRecovery.agentStuckNotification 保持一致。
-    private static let agentStuckDarwinNotification = "com.mivori.app.wallpaper.agentStuck"
+    private static let agentStuckDarwinNotification = "io.macdesk.mivori.wallpaper.agentStuck"
 
-    private let log = OSLog(subsystem: "com.mivori.app", category: "ExtensionHealer")
-    private let queue = DispatchQueue(label: "com.mivori.app.extension-healer", qos: .utility)
+    private let log = OSLog(subsystem: "io.macdesk.mivori", category: "ExtensionHealer")
+    private let queue = DispatchQueue(label: "io.macdesk.mivori.extension-healer", qos: .utility)
     private let stateLock = NSLock()
     private var started = false
     private var monitoring = false
@@ -265,7 +265,7 @@ final class WallpaperExtensionAgentHealer: @unchecked Sendable {
         guard BackgroundRuntimeRole.isHelper, !BackgroundRuntimeRole.isIsolatedTest else { return }
         let extensionURL = WaifuXHostBundle.bundleURL
             .appendingPathComponent("Contents/PlugIns/WaifuXWallpaperExtension.appex", isDirectory: true)
-        let stateFile = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")?
+        let stateFile = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")?
             .appendingPathComponent("waifux-wallpaper-state.json")
         stateLock.lock()
         guard !started else { stateLock.unlock(); return }

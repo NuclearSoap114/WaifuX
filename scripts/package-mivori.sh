@@ -23,7 +23,7 @@ ditto --noqtn --norsrc "$built_app" "$app"
 xattr -cr "$app"
 resources="$app/Contents/Resources"
 info="$app/Contents/Info.plist"
-test "$(plutil -extract CFBundleIdentifier raw "$info")" = "com.mivori.app"
+test "$(plutil -extract CFBundleIdentifier raw "$info")" = "io.macdesk.mivori"
 test "$(plutil -extract CFBundleIconFile raw "$info")" = "Mivori.icns"
 cmp "$project_root/Brand/Mivori.icns" "$resources/Mivori.icns"
 test -f "$resources/default.metallib"
@@ -44,10 +44,12 @@ if [[ -d "$app/Contents/Frameworks" ]]; then
   done < <(find "$app/Contents/Frameworks" -maxdepth 1 -name '*.framework' -print0)
 fi
 
+timestamp=(--timestamp=none)
 if [[ "$signing_id" != "-" ]]; then
-  timestamp=(--timestamp --options runtime)
-else
-  timestamp=(--timestamp=none)
+  timestamp+=(--options runtime)
+  if [[ "${MIVORI_SECURE_TIMESTAMP:-0}" == "1" ]]; then
+    timestamp=(--timestamp --options runtime)
+  fi
 fi
 
 helper="$app/Contents/Helpers/WaifuXHelper.app"

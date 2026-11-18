@@ -214,7 +214,7 @@ final class FrameChannel: @unchecked Sendable {
     }
 
     private func socketPath() -> String? {
-        return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")?
+        return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")?
             .appendingPathComponent("socket/extension.ipc")
             .path
     }

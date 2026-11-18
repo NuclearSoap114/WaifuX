@@ -731,7 +731,7 @@ final class WallpaperEngineXBridge: ObservableObject {
         guard CGPreflightScreenCaptureAccess() else { return nil }
         var pids: [pid_t] = []
         if let helperApp = NSWorkspace.shared.runningApplications.first(where: {
-            $0.bundleIdentifier == "com.mivori.app.helper"
+            $0.bundleIdentifier == "io.macdesk.mivori.helper"
         }), helperApp.processIdentifier > 0 {
             pids.append(pid_t(helperApp.processIdentifier))
         }

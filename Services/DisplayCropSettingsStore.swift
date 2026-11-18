@@ -113,7 +113,7 @@ final class DisplayCropSettingsStore: ObservableObject {
     private let fingerprintKey = "display_crop_fingerprints_v1"
 
     /// 共享给扩展端的 App Group identifier（与 LockScreenWallpaperService 一致）。
-    private let appGroupID = "group.com.mivori.app"
+    private let appGroupID = "group.io.macdesk.mivori"
     /// 共享给扩展端的 App Group JSON 文件名。
     private let sharedJSONName = "waifux-crop-prefs.json"
 
@@ -355,7 +355,7 @@ final class DisplayCropSettingsStore: ObservableObject {
     private nonisolated static func sharedContainerURL() -> URL? {
         guard !BackgroundRuntimeRole.isIsolatedTest else { return nil }
         return FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.mivori.app")
+            forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")
     }
 
     private func sharedContainerURL() -> URL? {
@@ -395,7 +395,7 @@ final class DisplayCropSettingsStore: ObservableObject {
             let center = CFNotificationCenterGetDarwinNotifyCenter()
             CFNotificationCenterPostNotification(
                 center,
-                CFNotificationName("com.mivori.app.wallpaper.prefsChanged" as CFString),
+                CFNotificationName("io.macdesk.mivori.wallpaper.prefsChanged" as CFString),
                 nil, nil, true
             )
         }

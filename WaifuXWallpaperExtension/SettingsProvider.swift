@@ -10,7 +10,7 @@ import Foundation
 
 /// 构建完整的壁纸设置项列表并返回 XPC 对象。
 func buildSettingsViewModelsXPC() async -> AnyObject? {
-    let bundleID = Bundle.main.bundleIdentifier ?? "com.mivori.app.wallpaperextension"
+    let bundleID = Bundle.main.bundleIdentifier ?? "io.macdesk.mivori.wallpaperextension"
     let groupID = GroupID(id: "waifux-display-wallpapers")
     let instances = loadDisplayInstances()
 
@@ -109,7 +109,7 @@ private struct DisplayInstanceRecord: Codable {
 }
 
 private func loadDisplayInstances() -> [DisplayInstanceRecord] {
-    guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") else {
+    guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori") else {
         return []
     }
     let url = container.appendingPathComponent("waifux-display-instances.json")

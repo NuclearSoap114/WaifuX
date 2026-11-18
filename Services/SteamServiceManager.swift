@@ -94,8 +94,8 @@ final class SteamServiceManager: NSObject, ObservableObject, @unchecked Sendable
     @Published private(set) var steamID = ""
     @Published private(set) var loginState: SteamServiceLoginState = .idle
 
-    private let ioQueue = DispatchQueue(label: "com.mivori.app.steam-service", qos: .userInitiated)
-    private let keychainService = "com.mivori.app.SteamService"
+    private let ioQueue = DispatchQueue(label: "io.macdesk.mivori.steam-service", qos: .userInitiated)
+    private let keychainService = "io.macdesk.mivori.SteamService"
     private let usernameKey = "steam_service_username"
     private let loginIDKey = "steam_service_login_id"
     private var process: Process?

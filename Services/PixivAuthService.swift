@@ -53,7 +53,7 @@ class PixivAuthService: ObservableObject {
 
         // 调试日志：打印 Pixiv 域下所有 cookie 的名称和长度
         // 仅 DEBUG 构建启用；不打印 value 以防 cookie 泄露到系统日志。
-        // 若调试需要 PHPSESSID 明文，可从 ~/Library/HTTPStorages/com.mivori.app.binarycookies 提取。
+        // 若调试需要 PHPSESSID 明文，可从 ~/Library/HTTPStorages/io.macdesk.mivori.binarycookies 提取。
         #if DEBUG
         if !pixivCookies.isEmpty {
             print("🍪 [PixivAuthService] Pixiv cookies in HTTPCookieStorage.shared (\(pixivCookies.count) total):")

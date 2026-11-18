@@ -179,7 +179,7 @@ private final class AgentConnectionListener: NSObject, NSXPCListenerDelegate {
         let guestStatus = SecCodeCopyGuestWithAttributes(nil, attributes, [], &guest)
         guard guestStatus == errSecSuccess, let guest else { return "client code lookup failed (\(guestStatus))" }
 
-        let identifier = "identifier \"com.mivori.app\""
+        let identifier = "identifier \"io.macdesk.mivori\""
         let requirementText: String
         if let team = ownTeamIdentifier ?? Self.readOwnTeamIdentifier() {
             requirementText = "\(identifier) and anchor apple generic and certificate leaf[subject.OU] = \"\(team)\""

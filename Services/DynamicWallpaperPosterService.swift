@@ -70,7 +70,7 @@ actor DynamicWallpaperPosterService {
     /// 抽帧质量
     private static let jpegQuality: CGFloat = 0.85
 
-    private static let logger = Logger(subsystem: "com.mivori.app", category: "DongtaiPoster")
+    private static let logger = Logger(subsystem: "io.macdesk.mivori", category: "DongtaiPoster")
 
     // MARK: - 状态
 

@@ -51,7 +51,7 @@ final class WallpaperPrefs: @unchecked Sendable {
     private let lastLoggedVideoIDLock = OSAllocatedUnfairLock<String?>(initialState: nil)
 
     private static var sharedContainerURL: URL? {
-        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")
     }
 
     private static var prefsURL: URL? {
@@ -198,7 +198,7 @@ final class WallpaperPrefs: @unchecked Sendable {
             { _, _, _, _, _ in
                 WallpaperPrefs.shared.reload()
             },
-            "com.mivori.app.wallpaper.prefsChanged" as CFString,
+            "io.macdesk.mivori.wallpaper.prefsChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -274,7 +274,7 @@ final class WallpaperPrefs: @unchecked Sendable {
         let center = CFNotificationCenterGetDarwinNotifyCenter()
         CFNotificationCenterPostNotification(
             center,
-            CFNotificationName("com.mivori.app.wallpaper.stateChanged" as CFString),
+            CFNotificationName("io.macdesk.mivori.wallpaper.stateChanged" as CFString),
             nil, nil, true
         )
     }

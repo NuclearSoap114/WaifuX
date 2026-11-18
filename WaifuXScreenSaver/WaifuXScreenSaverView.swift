@@ -16,10 +16,10 @@ import ScreenSaver
 @objc(WaifuXScreenSaverView)
 final class WaifuXScreenSaverView: ScreenSaverView {
 
-    private static let logger = Logger(subsystem: "com.mivori.app.screensaver", category: "Rendering")
+    private static let logger = Logger(subsystem: "io.macdesk.mivori.screensaver", category: "Rendering")
 
     /// 主程序写入配置后广播的通知名。
-    static let configurationChangedNotification = Notification.Name("com.mivori.app.screensaver.configurationChanged")
+    static let configurationChangedNotification = Notification.Name("io.macdesk.mivori.screensaver.configurationChanged")
 
     // MARK: - 状态
 

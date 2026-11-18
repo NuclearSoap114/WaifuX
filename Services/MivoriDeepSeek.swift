@@ -35,7 +35,7 @@ enum MivoriDeepSeek {
     private static var keyQuery: [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "com.mivori.app.deepseek",
+            kSecAttrService as String: "io.macdesk.mivori.deepseek",
             kSecAttrAccount as String: "api-key",
             kSecUseDataProtectionKeychain as String: false
         ]

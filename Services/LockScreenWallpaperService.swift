@@ -104,7 +104,7 @@ final class LockScreenWallpaperService: ObservableObject {
     private var explicitUnlockObservedAt: Date?
     private let staleSessionLockGracePeriod: TimeInterval = 3.0
 
-    private let appGroupID = "group.com.mivori.app"
+    private let appGroupID = "group.io.macdesk.mivori"
     private let prefsFileName = "waifux-wallpaper-prefs.json"
     private let videoDirName = "WallpaperVideos"
     private let imageDirName = "WallpaperImages"
@@ -963,7 +963,7 @@ final class LockScreenWallpaperService: ObservableObject {
         let center = CFNotificationCenterGetDarwinNotifyCenter()
         CFNotificationCenterPostNotification(
             center,
-            CFNotificationName("com.mivori.app.wallpaper.prefsChanged" as CFString),
+            CFNotificationName("io.macdesk.mivori.wallpaper.prefsChanged" as CFString),
             nil, nil, true
         )
     }

@@ -1286,7 +1286,7 @@ final class PersistentDownloadQueueService {
         return FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first!
-            .appendingPathComponent("com.mivori.app", isDirectory: true)
+            .appendingPathComponent("io.macdesk.mivori", isDirectory: true)
             .appendingPathComponent("DownloadQueue", isDirectory: true)
             .appendingPathComponent("download-queue-v2.json", isDirectory: false)
     }

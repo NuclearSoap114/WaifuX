@@ -36,7 +36,7 @@ enum WallpaperExtensionKeeper {
 
     /// keeper CLI 模式参数（LaunchAgent ProgramArguments 的第二个元素）
     static let keeperModeArgument = "--wallpaper-keeper"
-    static let extensionBundleID = "com.mivori.app.wallpaperextension"
+    static let extensionBundleID = "io.macdesk.mivori.wallpaperextension"
     /// LaunchAgent 开关的持久化 key（仅 App 进程读写，keeper 进程不读）
     static let launchAgentDefaultsKey = "wallpaper_extension_keeper_enabled"
     static let launchAgentLabel = "com.mivori.wallpaperkeeper"
@@ -46,7 +46,7 @@ enum WallpaperExtensionKeeper {
     private static let mainExecutableName = "Mivori"
     private static let lsregisterPath =
         "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
-    private static let log = OSLog(subsystem: "com.mivori.app", category: "WallpaperKeeper")
+    private static let log = OSLog(subsystem: "io.macdesk.mivori", category: "WallpaperKeeper")
 
     /// 正常巡检间隔
     private static let pollIntervalSeconds: UInt32 = 10

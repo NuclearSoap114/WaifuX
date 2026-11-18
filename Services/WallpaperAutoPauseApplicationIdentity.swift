@@ -2,7 +2,7 @@
 /// Bundle identity is used instead of process names, which can be ambiguous.
 enum WallpaperAutoPauseApplicationIdentity {
     static func isWaifuX(_ bundleIdentifier: String?) -> Bool {
-        bundleIdentifier == "com.mivori.app" || bundleIdentifier == "com.mivori.app.helper"
+        bundleIdentifier == "io.macdesk.mivori" || bundleIdentifier == "io.macdesk.mivori.helper"
     }
 
     static func shouldInspectForeground(_ bundleIdentifier: String?) -> Bool {

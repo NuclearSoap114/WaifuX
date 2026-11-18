@@ -209,7 +209,7 @@ final class AppLogger: @unchecked Sendable {
     }()
 
     // os.log subsystem
-    private static let subsystem = "com.mivori.app"
+    private static let subsystem = "io.macdesk.mivori"
     private static let oslog = OSLog(subsystem: subsystem, category: "WaifuX")
 
     // 队列保证线程安全写入文件
@@ -520,7 +520,7 @@ final class AppLogger: @unchecked Sendable {
 
         // 锁屏视频由独立的 Wallpaper Extension 播放。主 App 的日志没有
         // reader 循环、解码失败和 WallpaperAgent update，诊断时需要同一份导出。
-        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") {
+        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori") {
             readableSegments += appendLogSegment(
                 "WALLPAPER EXTENSION LOG",
                 from: container.appendingPathComponent("mivori-extension.log"),

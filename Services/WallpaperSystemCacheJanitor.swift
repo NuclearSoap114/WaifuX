@@ -9,7 +9,7 @@ import AppKit
 ///   `~/Library/Containers/com.apple.wallpaper.agent/Data/Library/Caches/com.apple.wallpaper.caches/`
 ///     ├── extension-com.apple.wallpaper.extension.image/     ← 自定义图片解码缓存（大头，4K BMP ≈ 24MB/张）
 ///     ├── extension-com.apple.wallpaper.extension.aerials/   ← 系统航空壁纸解码缓存
-///     └── extension-com.mivori.app.wallpaperextension/       ← 本 App 锁屏扩展缓存（不参与清理）
+///     └── extension-io.macdesk.mivori.wallpaperextension/       ← 本 App 锁屏扩展缓存（不参与清理）
 ///
 /// 实测（macOS 26.6）：该缓存没有任何系统开关、也不会被系统自动回收，壁纸换得
 /// 越多攒得越大（每换一次 +24~48MB）。本组件提供 LRU 式水位清理：

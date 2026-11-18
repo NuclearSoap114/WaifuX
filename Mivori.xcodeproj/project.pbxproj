@@ -220,7 +220,6 @@
 		5D25B84E7A16D1153BF60524 /* VideoPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60792A18B2159DF9B640D53B /* VideoPreloader.swift */; };
 		5D9FB67F12608EA5F4A863E1 /* LoadingAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5823B5483A46103FEB65B64 /* LoadingAnimations.swift */; };
 		5E932B864F1E722AC814A35D /* DownloadPathManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E3218C4CCFBC10484AA00D /* DownloadPathManager.swift */; };
-		5EE4A65CBD2CC44DC2AA3B1D /* com.mivori.app.helper.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 09311D770B9551B42072B8EF /* com.mivori.app.helper.plist */; };
 		6023D1E9719AE7750F2C4D56 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7A88EDD3057D7F8CF4E076E6 /* InfoPlist.strings */; };
 		603C8DC4A7C8BBD908001B76 /* BackgroundAgentConnectionBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D9192BBB2D0F2E51DC984D /* BackgroundAgentConnectionBanner.swift */; };
 		60EA9A38D5FA95166AEB0C9C /* FolderLockService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BCC7B83A33B5BF116C41D8 /* FolderLockService.swift */; };
@@ -306,6 +305,7 @@
 		80BB7998708A245A6CA7F8AE /* WaifuXHostBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5172D1199BD118F9A7084C5B /* WaifuXHostBundle.swift */; };
 		81A7C087D0A9123A0FB64F0B /* Print.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827658A75FA20DCCF009C268 /* Print.swift */; };
 		81FC2E1504D8B8CA8731DDDC /* LockedFolderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236841A3737C71148E05DB27 /* LockedFolderOverlay.swift */; };
+		820F4F5EF5BEEDE36811E245 /* io.macdesk.mivori.helper.relinked.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4FAD960018760CCFE034A99F /* io.macdesk.mivori.helper.relinked.plist */; };
 		823085613195125A3BCFBD3E /* WebWallpaperDesignPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A67D713CE1CF78A976DF40E /* WebWallpaperDesignPanel.swift */; };
 		82BF4A0A6A8D8C8EDAB1E883 /* DanmakuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C969DAA27277A79B3197A2B /* DanmakuView.swift */; };
 		82D20C26560E7BADA1F3BD71 /* WaifuXPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD8D2A23A3382DC7104C3DB /* WaifuXPreferences.swift */; };
@@ -330,6 +330,7 @@
 		8C68E716A20FA69ED110BF5C /* GuessYouLikeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B744912EF4DD8541A802CB7A /* GuessYouLikeService.swift */; };
 		8C9262641219CF64E2E3AA1F /* VideoLoopAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7786D6E1ADAC5C4AC231CE2D /* VideoLoopAnalysisService.swift */; };
 		8C962D38796CF597E6D19C4D /* KonachanAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97805986F0E01B4E92E58BD3 /* KonachanAuthService.swift */; };
+		8CA762A40F1C7135191CC929 /* io.macdesk.mivori.helper.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 058C582BBB1A1ACF4B589387 /* io.macdesk.mivori.helper.plist */; };
 		8CC192885A2DCADDFBA5B160 /* AppRelauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841FEF25731D6F7BABB26D46 /* AppRelauncher.swift */; };
 		8E31F7C015C79844D8DB6588 /* VideoRendererProcessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84827B77F62437769CAB9A29 /* VideoRendererProcessController.swift */; };
 		8E854A3ED116B10CAC5A0F3C /* PixivAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014C32DEA823FD6497B635AC /* PixivAuthService.swift */; };
@@ -476,7 +477,6 @@
 		CDFF7A73390B84460D76B98A /* AppResponsivenessMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B9618A835F9CB0AC7B7FFB /* AppResponsivenessMonitor.swift */; };
 		CE7E3E0E56AE3E34A81DDE5E /* AnimePortraitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2115ED5F63E0D183C0ACD6 /* AnimePortraitCard.swift */; };
 		CEB59AD01A43F0354B2016B7 /* VideoFreezeFrameBudget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D37A32E1B959220C7657902 /* VideoFreezeFrameBudget.swift */; };
-		CF0ED8EA8B8A398358185507 /* com.mivori.app.helper.relinked.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 254A156B0A6A8C5BC749E4AD /* com.mivori.app.helper.relinked.plist */; };
 		CF58E0FDB7F521C761DE1341 /* WebViewCookieSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E147415AE2DA1E2B9F2458B /* WebViewCookieSync.swift */; };
 		CF8037860A47E5E57895C4AE /* VideoThumbnailCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111BB62ADA3401105B94444C /* VideoThumbnailCache.swift */; };
 		D0AD4A9202506FB9594D8DB1 /* WebWallpaperDesignService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB1E4C3603620E50D2E35F0 /* WebWallpaperDesignService.swift */; };
@@ -628,8 +628,8 @@
 			dstPath = Contents/Library/LaunchAgents;
 			dstSubfolderSpec = 1;
 			files = (
-				5EE4A65CBD2CC44DC2AA3B1D /* com.mivori.app.helper.plist in CopyFiles */,
-				CF0ED8EA8B8A398358185507 /* com.mivori.app.helper.relinked.plist in CopyFiles */,
+				8CA762A40F1C7135191CC929 /* io.macdesk.mivori.helper.plist in CopyFiles */,
+				820F4F5EF5BEEDE36811E245 /* io.macdesk.mivori.helper.relinked.plist in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -678,12 +678,12 @@
 		02B4C773DAAF0DC317807803 /* ExploreGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreGridLayout.swift; sourceTree = "<group>"; };
 		03F1972BF3C5778E76FEB722 /* AgentMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentMain.swift; sourceTree = "<group>"; };
 		055189ECA7BC52E08B9FCF53 /* GlobalWallpaperSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalWallpaperSyncCoordinator.swift; sourceTree = "<group>"; };
+		058C582BBB1A1ACF4B589387 /* io.macdesk.mivori.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = io.macdesk.mivori.helper.plist; sourceTree = "<group>"; };
 		05A11F95605A23414ED71B87 /* WallpaperDynamicTextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperDynamicTextParser.swift; sourceTree = "<group>"; };
 		064D93AF9F8DE25DDF192EFF /* MangaDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MangaDetailViewModel.swift; sourceTree = "<group>"; };
 		06CA9EA25C88BE6D999BD60C /* DynamicWallpaperPosterURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicWallpaperPosterURLProtocol.swift; sourceTree = "<group>"; };
 		079BECB2B84BFA9447C08AC0 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		0919BD340A353B64D1F2E439 /* we-mpkg-tool */ = {isa = PBXFileReference; path = "we-mpkg-tool"; sourceTree = "<group>"; };
-		09311D770B9551B42072B8EF /* com.mivori.app.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = com.mivori.app.helper.plist; sourceTree = "<group>"; };
 		09C2C0C67ECFB59156B86415 /* LocalizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationService.swift; sourceTree = "<group>"; };
 		0A6404094D0D7BAB460FAB46 /* LatestWallpaperSnapshotWork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestWallpaperSnapshotWork.swift; sourceTree = "<group>"; };
 		0CF063A7C6E48BC1DA1DFE32 /* WallpaperBatteryPauseOwnership.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperBatteryPauseOwnership.swift; sourceTree = "<group>"; };
@@ -722,7 +722,6 @@
 		24A2FF91DF17CB8D532F137C /* BackgroundAgentClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAgentClient.swift; sourceTree = "<group>"; };
 		24DE25EFE237D8905EC859F9 /* WallpaperSchedulerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperSchedulerViewModel.swift; sourceTree = "<group>"; };
 		24E0E29C0AEF69078BB9E82A /* TaskQueueStatusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueStatusService.swift; sourceTree = "<group>"; };
-		254A156B0A6A8C5BC749E4AD /* com.mivori.app.helper.relinked.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = com.mivori.app.helper.relinked.plist; sourceTree = "<group>"; };
 		28D91ECE48E9FA3F4E93BEF3 /* MangaDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MangaDetailSheet.swift; sourceTree = "<group>"; };
 		2A1135E9CD1AF3379E43DA45 /* WallpaperCardMorphCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperCardMorphCoordinator.swift; sourceTree = "<group>"; };
 		2A75AC59A1B0A11A4CD02D29 /* RendererComponentUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererComponentUpdateView.swift; sourceTree = "<group>"; };
@@ -788,6 +787,7 @@
 		4DB162B4BF359DCB203D4A21 /* WallpaperPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperPlayerBar.swift; sourceTree = "<group>"; };
 		4E1CEFAA33F60F8AE0424DB0 /* DesktopIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopIconManager.swift; sourceTree = "<group>"; };
 		4E863F637BC71F8749A03A9F /* AnimeRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimeRuleStore.swift; sourceTree = "<group>"; };
+		4FAD960018760CCFE034A99F /* io.macdesk.mivori.helper.relinked.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = io.macdesk.mivori.helper.relinked.plist; sourceTree = "<group>"; };
 		50325BF6BE623A1E9D9D0CA3 /* SceneConfigOverridePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneConfigOverridePanel.swift; sourceTree = "<group>"; };
 		5032E4C2BA2EFF8ACB9A50C3 /* GlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassStyle.swift; sourceTree = "<group>"; };
 		512A4133439B82D706D6E28D /* GuideTours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTours.swift; sourceTree = "<group>"; };
@@ -1366,8 +1366,8 @@
 				B7F1401E700708C1DD772F64 /* BackgroundChildProcessCleanup.swift */,
 				7389B4E5C9C4865836AA0A52 /* BackgroundRuntimeBridge.swift */,
 				7D52B5BEE61A8446CE6A88D0 /* BackgroundRuntimeRole.swift */,
-				09311D770B9551B42072B8EF /* com.mivori.app.helper.plist */,
-				254A156B0A6A8C5BC749E4AD /* com.mivori.app.helper.relinked.plist */,
+				058C582BBB1A1ACF4B589387 /* io.macdesk.mivori.helper.plist */,
+				4FAD960018760CCFE034A99F /* io.macdesk.mivori.helper.relinked.plist */,
 				6EC609384C9FD4EE88AF2048 /* RendererComponentStore.swift */,
 				5172D1199BD118F9A7084C5B /* WaifuXHostBundle.swift */,
 				9FD8D2A23A3382DC7104C3DB /* WaifuXPreferences.swift */,
@@ -2633,7 +2633,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
 				OTHER_LDFLAGS = "$(inherited) $(SRCROOT)/Resources/zip_data.o $(SRCROOT)/Resources/zip_accessor.o";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app.helper;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori.helper;
 				PRODUCT_NAME = WaifuXHelper;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) WAIFUX_HELPER";
@@ -2723,7 +2723,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori;
 				PRODUCT_NAME = Mivori;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
@@ -2741,7 +2741,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app.screensaver;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori.screensaver;
 				PRODUCT_NAME = WaifuXScreenSaver;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -2762,7 +2762,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app.wallpaperextension;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori.wallpaperextension;
 				PRODUCT_NAME = WaifuXWallpaperExtension;
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "WaifuXWallpaperExtension/WallpaperExtension-Bridging-Header.h";
@@ -2781,7 +2781,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app.screensaver;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori.screensaver;
 				PRODUCT_NAME = WaifuXScreenSaver;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -2804,7 +2804,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori;
 				PRODUCT_NAME = Mivori;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
@@ -2823,7 +2823,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app.wallpaperextension;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori.wallpaperextension;
 				PRODUCT_NAME = WaifuXWallpaperExtension;
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "WaifuXWallpaperExtension/WallpaperExtension-Bridging-Header.h";
@@ -2845,7 +2845,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.4.2;
 				OTHER_LDFLAGS = "$(inherited) $(SRCROOT)/Resources/zip_data.o $(SRCROOT)/Resources/zip_accessor.o";
-				PRODUCT_BUNDLE_IDENTIFIER = com.mivori.app.helper;
+				PRODUCT_BUNDLE_IDENTIFIER = io.macdesk.mivori.helper;
 				PRODUCT_NAME = WaifuXHelper;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) WAIFUX_HELPER";

@@ -4,7 +4,7 @@ import ImageIO
 import SwiftUI
 
 extension Notification.Name {
-    static let openMivoriDesktopPet = Self("com.mivori.app.openDesktopPet")
+    static let openMivoriDesktopPet = Self("io.macdesk.mivori.openDesktopPet")
 }
 
 @MainActor

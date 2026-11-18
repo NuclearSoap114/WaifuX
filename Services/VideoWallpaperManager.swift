@@ -1756,7 +1756,7 @@ final class VideoWallpaperManager: ObservableObject {
                     manager.checkExtensionState()
                 }
             },
-            "com.mivori.app.wallpaper.stateChanged" as CFString,
+            "io.macdesk.mivori.wallpaper.stateChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -1770,7 +1770,7 @@ final class VideoWallpaperManager: ObservableObject {
     private func checkExtensionState() {
         guard !BackgroundRuntimeRole.isIsolatedTest else { return }
         guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.com.mivori.app"
+            forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori"
         ) else { return }
 
         let stateURL = container.appendingPathComponent("waifux-wallpaper-state.json")

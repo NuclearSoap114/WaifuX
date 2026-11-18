@@ -172,7 +172,7 @@ let wallpaperCommandQueue = DispatchQueue(label: "com.mivori.wallpaperextension.
 final class WaifuXWallpaperExtension: NSObject, AppExtension {
     typealias Configuration = WallpaperExtensionConfiguration
     private static let wakeRecoveryGeneration = OSAllocatedUnfairLock(initialState: 0)
-    private static let hostAppBundleIdentifier = "com.mivori.app"
+    private static let hostAppBundleIdentifier = "io.macdesk.mivori"
     private var commandPollTimer: DispatchSourceTimer?
 
     var configuration: WallpaperExtensionConfiguration {
@@ -223,7 +223,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                     reason: "appWillTerminate"
                 )
             },
-            "com.mivori.app.wallpaper.appWillTerminate" as CFString,
+            "io.macdesk.mivori.wallpaper.appWillTerminate" as CFString,
             nil,
             .deliverImmediately
         )
@@ -252,7 +252,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
     private static func reconcileHostApplicationPresence() {
         // The UI is allowed to exit while the Helper still owns IPC/playback.
         // Do not switch into self-hosted playback merely because its window/app closed.
-        let isRunning = [hostAppBundleIdentifier, "com.mivori.app.helper"].contains { identifier in
+        let isRunning = [hostAppBundleIdentifier, "io.macdesk.mivori.helper"].contains { identifier in
             !NSRunningApplication.runningApplications(withBundleIdentifier: identifier).isEmpty
         }
         let prefs = WallpaperPrefs.shared
@@ -291,7 +291,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                 extLog("[Extension] Released \(removed.count) active context(s), exiting")
                 exit(0)
             },
-            "com.mivori.app.wallpaper.extensionReload" as CFString,
+            "io.macdesk.mivori.wallpaper.extensionReload" as CFString,
             nil,
             .deliverImmediately
         )
@@ -503,7 +503,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                     WaifuXWallpaperExtension.drainPendingSocketCommands(reason: "commandsChanged")
                 }
             },
-            "com.mivori.app.wallpaper.commandsChanged" as CFString,
+            "io.macdesk.mivori.wallpaper.commandsChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -523,7 +523,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
 
     @discardableResult
     private static func pollAndHandleSocketCommand() -> Bool {
-        guard let socketPath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app")?
+        guard let socketPath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori")?
             .appendingPathComponent("socket/extension.ipc").path
         else { return false }
 
@@ -853,7 +853,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
                     WaifuXWallpaperExtension.drainPendingSocketCommands(reason: "prefsChanged")
                 }
             },
-            "com.mivori.app.wallpaper.prefsChanged" as CFString,
+            "io.macdesk.mivori.wallpaper.prefsChanged" as CFString,
             nil,
             .deliverImmediately
         )
@@ -917,7 +917,7 @@ final class WaifuXWallpaperExtension: NSObject, AppExtension {
 // MARK: - Logging
 
 private var extLogFileURL: URL {
-    if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.mivori.app") {
+    if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.io.macdesk.mivori") {
         return container.appendingPathComponent("mivori-extension.log")
     }
     return URL(fileURLWithPath: "/tmp/mivori-extension.log")

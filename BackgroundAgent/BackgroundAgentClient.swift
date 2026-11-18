@@ -330,7 +330,7 @@ final class BackgroundAgentClient: ObservableObject {
     /// launchd 里没有注册该 mach service 时，`NSXPCConnection` 报的错：
     /// `NSCocoaErrorDomain` 的 `NSXPCConnectionInvalid`（4099，系统文案即
     /// 「无法与帮助程序通信。」）；launchd 侧对应
-    /// `failed lookup: name = com.mivori.app.helper.control`。
+    /// `failed lookup: name = io.macdesk.mivori.helper.control`。
     private static func indicatesMissingLaunchdJob(_ error: Error) -> Bool {
         let code = CocoaError.Code.xpcConnectionInvalid.rawValue
         let failure = error as NSError
@@ -516,7 +516,7 @@ final class BackgroundAgentClient: ObservableObject {
         connect()
         try await ensureCurrentHelper(watchingLaunchdLabel: mode.launchdLabel)
         try Task.checkCancellation()
-        let legacy = UserDefaults.standard.persistentDomain(forName: "com.mivori.app") ?? [:]
+        let legacy = UserDefaults.standard.persistentDomain(forName: "io.macdesk.mivori") ?? [:]
         _ = try await perform("preferences.migrate", ["preferences": legacy])
         try Task.checkCancellation()
         try await configureMediaEnvironment()
